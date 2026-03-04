@@ -5,11 +5,10 @@ function ProductCard({name, price}) {
 
   return (
     <motion.div
-      whileHover={{scale:1.05}}
-      whileTap={{scale:0.95}}
-      style={{
-        border:"1px solid #ddd",
-        borderRadius:"10px",
+      whileHover={{ scale: 1.08 }}
+  transition={{ duration: 0.3 }}
+  className="card shadow-lg border-0 h-100"
+  style={{ borderRadius: "12px", overflow: "hidden",
         padding:"20px",
         width:"200px",
         cursor:"pointer"

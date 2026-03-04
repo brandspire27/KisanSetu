@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Signup from "./pages/Signup";
@@ -18,11 +18,7 @@ function App() {
   <Route path="/dashboard" element={<Dashboard/>}/>
   <Route path="/products" element={<Products/>}/>
 </Routes>
-      <footer className="bg-dark text-white text-center py-3 mt-5">
-  <small>
-    © {new Date().getFullYear()} KisanSetu — Empowering Farmers 🌾
-  </small>
-</footer>
+      <Footer />
     </BrowserRouter>
   );
 }
