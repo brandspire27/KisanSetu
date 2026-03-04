@@ -1,53 +1,52 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-function Navbar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 
- useEffect(() => {
+function Navbar() {
+
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  setIsLoggedIn(!!token);
-}, [location]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
-    setIsLoggedIn(false);
     navigate("/login");
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-success">
-      <div className="container">
-        <Link className="navbar-brand fw-bold fs-4" to="/">
-          🌾 KisanSetu
-        </Link>
+    <nav style={{
+      display:"flex",
+      justifyContent:"space-between",
+      alignItems:"center",
+      padding:"15px 40px",
+      background:"#2E7D32",
+      color:"white"
+    }}>
+      <h2>Kisan Setu 🌾</h2>
 
-        <div>
-          <Link className="btn btn-light me-2" to="/">
-            Home
-          </Link>
+      <div style={{display:"flex", gap:"20px"}}>
 
-          {isLoggedIn && (
-            <Link className="btn btn-light me-2" to="/dashboard">
-              Dashboard
-            </Link>
-          )}
+        <Link to="/" style={{color:"white"}}>Home</Link>
+        <Link to="/products" style={{color:"white"}}>Products</Link>
 
-          {!isLoggedIn ? (
-            <Link className="btn btn-light" to="/login">
-              Login
-            </Link>
-          ) : (
-            <button
-              className="btn btn-light"
+        {!token && (
+          <>
+            <Link to="/login" style={{color:"white"}}>Login</Link>
+            <Link to="/signup" style={{color:"white"}}>Signup</Link>
+          </>
+        )}
+
+        {token && (
+          <>
+            <Link to="/dashboard" style={{color:"white"}}>Dashboard</Link>
+            <span
+              style={{cursor:"pointer"}}
               onClick={handleLogout}
             >
               Logout
-            </button>
-          )}
-        </div>
+            </span>
+          </>
+        )}
+
       </div>
     </nav>
   );

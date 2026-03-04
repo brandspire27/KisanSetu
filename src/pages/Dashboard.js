@@ -216,18 +216,12 @@ const handleDeleteProduct = (productId) => {
                     />
                   )}
                  <div className="card-body">
-  <h5>{product.name}</h5>
-  <p>₹{product.price}</p>
+  <h5 className="fw-bold">{product.name}</h5>
+  <p className="text-success">₹{product.price}</p>
   <p>Quantity: {product.quantity}</p>
-  <button
-  className="btn btn-success"
-  onClick={() => setShowAddProduct(!showAddProduct)}
->
-  {showAddProduct ? "Close Form" : "+ Add Product"}
-</button>
 
   <button
-    className="btn btn-sm btn-danger mt-2"
+    className="btn btn-sm btn-danger"
     onClick={() => handleDeleteProduct(product._id)}
   >
     Delete

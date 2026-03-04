@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -32,6 +32,12 @@ function Login() {
         alert(err.response?.data?.message || "Login Failed");
       });
   };
+  useEffect(() => {
+  const token = localStorage.getItem("token");
+  if(token){
+    navigate("/dashboard");
+  }
+}, [navigate]);
 
   const handleRegister = () => {
     let registerData = {

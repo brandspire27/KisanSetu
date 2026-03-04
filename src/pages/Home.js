@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { motion } from "framer-motion";
 
 function Home() {
+
   const [products, setProducts] = useState([]);
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
@@ -27,29 +29,50 @@ function Home() {
   };
 
   return (
-    <>
+
+    <motion.div
+      initial={{opacity:0}}
+      animate={{opacity:1}}
+      transition={{duration:0.8}}
+    >
+
       {/* Hero Section */}
-      <div className="bg-light py-5 text-center border-bottom">
+      <motion.div
+        initial={{y:50, opacity:0}}
+        animate={{y:0, opacity:1}}
+        transition={{duration:1}}
+        className="bg-light py-5 text-center border-bottom"
+      >
         <div className="container">
           <h1 className="display-5 fw-bold text-success">
             Connecting Farmers Directly to Consumers 🌾
           </h1>
+
           <p className="lead text-muted mt-3">
             Fresh produce. Fair prices. No middlemen.
           </p>
         </div>
-      </div>
+      </motion.div>
+
 
       {/* Product Section */}
       <div className="container mt-5">
+
         <h2 className="text-center fw-bold mb-4">
           🌾 Available Products
         </h2>
 
         <div className="row">
+
           {products.map(product => (
+
             <div key={product._id} className="col-md-4 mb-4">
-              <div className="card shadow border-0 h-100 hover-card">
+
+              <motion.div
+                whileHover={{scale:1.05}}
+                transition={{duration:0.3}}
+                className="card shadow border-0 h-100"
+              >
 
                 {product.image && (
                   <img
@@ -61,6 +84,7 @@ function Home() {
                 )}
 
                 <div className="card-body d-flex flex-column">
+
                   <h5 className="card-title fw-bold">
                     {product.name}
                   </h5>
@@ -83,12 +107,19 @@ function Home() {
                   )}
 
                 </div>
-              </div>
+
+              </motion.div>
+
             </div>
+
           ))}
+
         </div>
+
       </div>
-    </>
+
+    </motion.div>
+
   );
 }
 
