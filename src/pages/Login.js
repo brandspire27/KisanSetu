@@ -13,7 +13,7 @@ function Login() {
   const [registerType, setRegisterType] = useState("email");
 
   const navigate = useNavigate();
-  const API = "http://localhost:5000";
+  const API = "https://kisansetu-backend-v50h.onrender.com/";
 
   const handleLogin = () => {
     const loginData =
