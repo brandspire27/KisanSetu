@@ -16,22 +16,34 @@ function Login() {
   const API = "https://kisansetu-backend-v50h.onrender.com";
 
   const handleLogin = () => {
-    const loginData =
-      loginType === "email"
-        ? { email, password }
-        : { mobile, password };
+  if (loginType === "email" && (!email || !password)) {
+    alert("Please enter email and password");
+    return;
+  }
 
-    axios.post(`${API}/auth/login`, loginData)
-      .then(res => {
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("role", res.data.role);
-        alert("Login Successful!");
-        navigate("/dashboard");
-      })
-      .catch(err => {
-        alert(err.response?.data?.message || "Login Failed");
-      });
-  };
+  if (loginType === "mobile" && (!mobile || !password)) {
+    alert("Please enter mobile and password");
+    return;
+  }
+
+  const loginData =
+    loginType === "email"
+      ? { email, password }
+      : { mobile, password };
+
+  axios.post(`${API}/auth/login`, loginData)
+    .then(res => {
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("role", res.data.role);
+      alert("Login Successful!");
+      navigate("/dashboard");
+    })
+    .catch(err => {
+      console.log(err.response); // 🔥 add this
+      alert(err.response?.data?.message || "Login Failed");
+    });
+};
+  console.log(err.response);
   useEffect(() => {
   const token = localStorage.getItem("token");
   if(token){
