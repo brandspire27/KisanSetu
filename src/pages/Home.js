@@ -8,7 +8,7 @@ function Home() {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
-  const API = "https://kisansetu-backend-v50h.onrender.com/";
+  const API = "https://kisansetu-backend-v50h.onrender.com";
 
   useEffect(() => {
     axios.get(`${API}/products`)
