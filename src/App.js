@@ -7,6 +7,9 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
+import Mandi from "./pages/Mandi";
+import Weather from "./pages/Weather";
+import Contact from "./pages/Contact";
 function App() {
   return (
     <BrowserRouter>
