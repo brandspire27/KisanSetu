@@ -1,21 +1,95 @@
+/* ===== GLOBAL RESET ===== */
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+    'Droid Sans', 'Helvetica Neue', sans-serif;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  background: #f9fafb; /* soft background */
+  color: #1f2937;
 }
 
+/* ===== CODE FONT ===== */
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+/* ===== NAVBAR PREMIUM ===== */
+.navbar {
+  transition: all 0.3s ease;
+}
+
+.nav-link {
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  transform: translateY(-2px);
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  transition: all 0.3s ease;
+  border-radius: 10px;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+}
+
+/* ===== PREMIUM CARD ===== */
+.card {
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+/* ===== HOVER CARD (YOUR EXISTING UPGRADED) ===== */
 .hover-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .hover-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  transform: translateY(-8px);
+  box-shadow: 0 15px 25px rgba(0,0,0,0.15);
+}
+
+/* ===== INPUT FIELDS ===== */
+input, select {
+  border-radius: 10px !important;
+  transition: all 0.3s ease;
+}
+
+input:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.3);
+}
+
+/* ===== SECTION SPACING ===== */
+section {
+  padding: 60px 0;
+}
+
+/* ===== TEXT STYLES ===== */
+h1, h2, h3 {
+  font-weight: 700;
+}
+
+.text-muted {
+  opacity: 0.8;
+}
+
+/* ===== SMOOTH ANIMATIONS ===== */
+* {
+  scroll-behavior: smooth;
 }
