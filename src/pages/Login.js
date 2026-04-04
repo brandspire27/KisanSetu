@@ -16,40 +16,40 @@ function Login() {
   const API = "https://kisansetu-backend-v50h.onrender.com";
 
   const handleLogin = () => {
-  if (loginType === "email" && (!email || !password)) {
-    alert("Please enter email and password");
-    return;
-  }
+    if (loginType === "email" && (!email || !password)) {
+      alert("Please enter email and password");
+      return;
+    }
 
-  if (loginType === "mobile" && (!mobile || !password)) {
-    alert("Please enter mobile and password");
-    return;
-  }
+    if (loginType === "mobile" && (!mobile || !password)) {
+      alert("Please enter mobile and password");
+      return;
+    }
 
-  const loginData =
-    loginType === "email"
-      ? { email, password }
-      : { mobile, password };
+    const loginData =
+      loginType === "email"
+        ? { email, password }
+        : { mobile, password };
 
-  axios.post(`${API}/auth/login`, loginData)
-    .then(res => {
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("role", res.data.role);
-      alert("Login Successful!");
-      navigate("/dashboard");
-    })
-    .catch(err => {
-      console.log(err.response); // 🔥 add this
-      alert(err.response?.data?.message || "Login Failed");
-    });
-};
-  console.log(err.response);
+    axios.post(`${API}/auth/login`, loginData)
+      .then(res => {
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("role", res.data.role);
+        alert("Login Successful!");
+        navigate("/dashboard");
+      })
+      .catch((err) => {
+        console.log(err.response); // ✅ valid here
+        alert(err.response?.data?.message || "Login Failed");
+      });
+  };
+
   useEffect(() => {
-  const token = localStorage.getItem("token");
-  if(token){
-    navigate("/dashboard");
-  }
-}, [navigate]);
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
 
   const handleRegister = () => {
     let registerData = {
@@ -69,7 +69,7 @@ function Login() {
         alert("Registration Successful! Please Login.");
         setIsRegistering(false);
       })
-      .catch(err => {
+      .catch((err) => {
         alert(err.response?.data?.message || "Registration Failed");
       });
   };
