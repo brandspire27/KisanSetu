@@ -84,14 +84,16 @@ function Navbar() {
 
       {/* 🔥 Sliding Mobile Menu */}
       <div
-        className={`position-fixed top-0 end-0 h-100 bg-white shadow p-4`}
-        style={{
-          width: "260px",
-          transform: isOpen ? "translateX(0)" : "translateX(100%)",
-          transition: "0.3s ease-in-out",
-          zIndex: 1050,
-        }}
-      >
+  className="position-fixed top-0 end-0 h-100 shadow p-4"
+  style={{
+    width: "260px",
+    backgroundColor: "#ffffff",   // ✅ solid white
+    opacity: "1",                 // ✅ no transparency
+    transform: isOpen ? "translateX(0)" : "translateX(100%)",
+    transition: "0.3s ease-in-out",
+    zIndex: 1050,
+  }}
+>
         {/* Close Button */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h5 className="fw-bold">Menu</h5>
@@ -108,10 +110,10 @@ function Navbar() {
               to={item.path}
               onClick={() => setIsOpen(false)}
               className={`d-flex align-items-center gap-2 text-decoration-none p-2 rounded ${
-                isActive(item.path)
-                  ? "bg-success text-white"
-                  : "text-dark"
-              }`}
+  isActive(item.path)
+    ? "bg-success text-white"
+    : "text-dark fw-semibold"
+}`}
             >
               {item.icon} {item.name}
             </Link>
@@ -145,17 +147,18 @@ function Navbar() {
       {/* Background Overlay */}
       {isOpen && (
         <div
-          onClick={() => setIsOpen(false)}
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background: "rgba(0,0,0,0.4)",
-            zIndex: 1040,
-          }}
-        ></div>
+  onClick={() => setIsOpen(false)}
+  style={{
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    background: "rgba(0,0,0,0.5)", // darker overlay
+    backdropFilter: "blur(3px)",   // 🔥 blur effect
+    zIndex: 1040,
+  }}
+></div>
       )}
     </nav>
   );
