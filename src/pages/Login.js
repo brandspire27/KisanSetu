@@ -11,6 +11,9 @@ function Login() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [loginType, setLoginType] = useState("email");
   const [registerType, setRegisterType] = useState("email");
+  
+  // Loading State
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const API = "https://kisansetu-backend-v50h.onrender.com";
@@ -20,50 +23,34 @@ function Login() {
       alert("Please enter email and password");
       return;
     }
-
     if (loginType === "mobile" && (!mobile || !password)) {
       alert("Please enter mobile and password");
       return;
     }
 
-    const loginData =
-      loginType === "email"
-        ? { email, password }
-        : { mobile, password };
+    const loginData = loginType === "email" ? { email, password } : { mobile, password };
 
+    setLoading(true); // Start animation
     axios.post(`${API}/auth/login`, loginData)
       .then(res => {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("role", res.data.role);
-        alert("Login Successful!");
         navigate("/dashboard");
       })
       .catch((err) => {
-        console.log(err.response); // ✅ valid here
         alert(err.response?.data?.message || "Login Failed");
-      });
+      })
+      .finally(() => setLoading(false)); // Stop animation
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      navigate("/dashboard");
-    }
-  }, [navigate]);
-
   const handleRegister = () => {
-    let registerData = {
-      name,
-      password,
-      role
-    };
+    if (!role) return alert("Please select a role");
+    
+    let registerData = { name, password, role };
+    if (registerType === "email") registerData.email = email;
+    else registerData.mobile = mobile;
 
-    if (registerType === "email") {
-      registerData.email = email;
-    } else {
-      registerData.mobile = mobile;
-    }
-
+    setLoading(true);
     axios.post(`${API}/auth/register`, registerData)
       .then(() => {
         alert("Registration Successful! Please Login.");
@@ -71,123 +58,98 @@ function Login() {
       })
       .catch((err) => {
         alert(err.response?.data?.message || "Registration Failed");
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) navigate("/dashboard");
+  }, [navigate]);
+
   return (
-    <div className="container mt-5">
-      <div className="card shadow p-4 mx-auto" style={{ maxWidth: "400px" }}>
-        <h4 className="text-center mb-3">
-          {isRegistering ? "Register" : "Login"}
-        </h4>
+    <div className="d-flex align-items-center justify-content-center" style={{ minHeight: "100vh", background: "#f4f7f6" }}>
+      <div className="card border-0 shadow-lg p-4" style={{ maxWidth: "420px", width: "90%", borderRadius: "15px" }}>
+        <div className="text-center mb-4">
+          <h2 className="fw-bold text-success">KisanSetu</h2>
+          <p className="text-muted">{isRegistering ? "Create your account" : "Welcome back!"}</p>
+        </div>
 
-        {isRegistering && (
+        {/* Tab Switcher for Login/Register Type */}
+        <div className="btn-group w-100 mb-4" role="group">
+          <button 
+            className={`btn btn-sm ${(!isRegistering ? loginType : registerType) === 'email' ? 'btn-success' : 'btn-outline-success'}`}
+            onClick={() => isRegistering ? setRegisterType("email") : setLoginType("email")}
+          >Email</button>
+          <button 
+            className={`btn btn-sm ${(!isRegistering ? loginType : registerType) === 'mobile' ? 'btn-success' : 'btn-outline-success'}`}
+            onClick={() => isRegistering ? setRegisterType("mobile") : setLoginType("mobile")}
+          >Mobile</button>
+        </div>
+
+        <div className="form-group">
+          {isRegistering && (
+            <input
+              className="form-control mb-3 py-2"
+              type="text"
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          )}
+
           <input
-            className="form-control mb-2"
-            type="text"
-            placeholder="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            className="form-control mb-3 py-2"
+            type={(!isRegistering ? loginType : registerType) === "email" ? "email" : "text"}
+            placeholder={(!isRegistering ? loginType : registerType) === "email" ? "Email Address" : "Mobile Number"}
+            value={(!isRegistering ? loginType : registerType) === "email" ? email : mobile}
+            onChange={(e) => (!isRegistering ? loginType : registerType) === "email" ? setEmail(e.target.value) : setMobile(e.target.value)}
           />
-        )}
 
-        {!isRegistering && (
-          <>
-            <select
-              className="form-control mb-2"
-              value={loginType}
-              onChange={(e) => setLoginType(e.target.value)}
-            >
-              <option value="email">Login with Email</option>
-              <option value="mobile">Login with Mobile</option>
-            </select>
-
-            {loginType === "email" ? (
-              <input
-                className="form-control mb-2"
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            ) : (
-              <input
-                className="form-control mb-2"
-                type="text"
-                placeholder="Mobile"
-                value={mobile}
-                onChange={(e) => setMobile(e.target.value)}
-              />
-            )}
-          </>
-        )}
-
-        {isRegistering && (
-          <>
-            <select
-              className="form-control mb-2"
-              value={registerType}
-              onChange={(e) => setRegisterType(e.target.value)}
-            >
-              <option value="email">Register with Email</option>
-              <option value="mobile">Register with Mobile</option>
-            </select>
-
-            {registerType === "email" ? (
-              <input
-                className="form-control mb-2"
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            ) : (
-              <input
-                className="form-control mb-2"
-                type="text"
-                placeholder="Mobile"
-                value={mobile}
-                onChange={(e) => setMobile(e.target.value)}
-              />
-            )}
-
-            <select
-              className="form-control mb-2"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-            >
-              <option value="">Select Role</option>
+          {isRegistering && (
+            <select className="form-select mb-3 py-2" value={role} onChange={(e) => setRole(e.target.value)}>
+              <option value="">I am a...</option>
               <option value="farmer">Farmer</option>
               <option value="consumer">Consumer</option>
             </select>
-          </>
-        )}
+          )}
 
-        <input
-          className="form-control mb-3"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <input
+            className="form-control mb-4 py-2"
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-        <button
-          className="btn btn-success w-100"
-          onClick={isRegistering ? handleRegister : handleLogin}
-        >
-          {isRegistering ? "Register" : "Login"}
-        </button>
-
-        <p className="text-center mt-3">
-          {isRegistering ? "Already have an account?" : "Don't have an account?"}
-          <span
-            className="text-primary ms-2"
-            style={{ cursor: "pointer" }}
-            onClick={() => setIsRegistering(!isRegistering)}
+          <button
+            className="btn btn-success w-100 py-2 fw-bold shadow-sm d-flex align-items-center justify-content-center"
+            onClick={isRegistering ? handleRegister : handleLogin}
+            disabled={loading}
           >
-            {isRegistering ? "Login" : "Register"}
-          </span>
-        </p>
+            {loading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Processing...
+              </>
+            ) : (
+              isRegistering ? "Register" : "Login"
+            )}
+          </button>
+        </div>
+
+        <div className="text-center mt-4">
+          <p className="small text-muted">
+            {isRegistering ? "Already have an account?" : "Don't have an account?"}
+            <span
+              className="text-success fw-bold ms-2"
+              style={{ cursor: "pointer", textDecoration: "underline" }}
+              onClick={() => setIsRegistering(!isRegistering)}
+            >
+              {isRegistering ? "Sign In" : "Sign Up"}
+            </span>
+          </p>
+        </div>
       </div>
     </div>
   );
