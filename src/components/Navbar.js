@@ -87,9 +87,8 @@ function Navbar() {
   className="position-fixed top-0 end-0 h-100 shadow p-4"
   style={{
     width: "260px",
-    background: "#ffffff",          // ✅ force solid white
-    opacity: 1,                     // ✅ remove transparency
-    zIndex: 1050,
+    background: "#ffffff",
+    zIndex: 9999, // 🔥 increase this
     transform: isOpen ? "translateX(0)" : "translateX(100%)",
     transition: "0.3s ease-in-out",
   }}
@@ -146,20 +145,19 @@ function Navbar() {
 
       {/* Background Overlay */}
       {isOpen && (
-        <div
-  onClick={() => setIsOpen(false)}
-  style={{
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    background: "rgba(22, 163, 74, 0.9)", // darker overlay
-    backdropFilter: "none",   // 🔥 blur effect
-    zIndex: 1040,
-  }}
-></div>
-      )}
+  <div
+    onClick={() => setIsOpen(false)}
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      background: "rgba(0,0,0,0.5)",
+      zIndex: 9998, // just below menu
+    }}
+  ></div>
+)}
     </nav>
   );
 }
