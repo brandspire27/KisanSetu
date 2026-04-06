@@ -87,11 +87,11 @@ function Navbar() {
   className="position-fixed top-0 end-0 h-100 shadow p-4"
   style={{
     width: "260px",
-    backgroundColor: "#ffffff",   // ✅ solid white
-    opacity: "1",                 // ✅ no transparency
+    background: "#ffffff",          // ✅ force solid white
+    opacity: 1,                     // ✅ remove transparency
+    zIndex: 1050,
     transform: isOpen ? "translateX(0)" : "translateX(100%)",
     transition: "0.3s ease-in-out",
-    zIndex: 1050,
   }}
 >
         {/* Close Button */}
@@ -154,8 +154,8 @@ function Navbar() {
     left: 0,
     width: "100%",
     height: "100%",
-    background: "rgba(0,0,0,0.5)", // darker overlay
-    backdropFilter: "blur(10px)",   // 🔥 blur effect
+    background: "rgba(22, 163, 74, 0.9)", // darker overlay
+    backdropFilter: "none",   // 🔥 blur effect
     zIndex: 1040,
   }}
 ></div>
