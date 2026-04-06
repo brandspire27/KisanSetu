@@ -62,7 +62,8 @@ function Footer() {
             <h5 className="fw-bold">Contact</h5>
 
             <p>Email: support@kisansetu.com</p>
-            <p>Phone: +91 90000 00000</p>
+            <p>phone: +91 93194 47795</p>
+            <p>Phone: +91 85109 21279</p>
             <p>India 🇮🇳</p>
 
           </div>
