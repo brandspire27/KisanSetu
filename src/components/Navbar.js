@@ -91,13 +91,7 @@ function Navbar() {
 </button>
       </div>
 
-        {/* Header */}
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h5 className="fw-bold">Menu</h5>
-          <button className="btn fs-4" onClick={() => setIsOpen(false)}>
-            <FaTimes />
-          </button>
-        </div>
+        
 
         {/* Menu Items */}
         {isOpen && (
