@@ -155,7 +155,7 @@ function Navbar() {
     width: "100%",
     height: "100%",
     background: "rgba(0,0,0,0.5)", // darker overlay
-    backdropFilter: "blur(3px)",   // 🔥 blur effect
+    backdropFilter: "blur(10px)",   // 🔥 blur effect
     zIndex: 1040,
   }}
 ></div>
