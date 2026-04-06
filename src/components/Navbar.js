@@ -102,21 +102,29 @@ function Navbar() {
         </div>
 
         {/* Menu Items */}
-        <div className="d-flex flex-column gap-3">
-          {menuItems.map((item, index) => (
-            <Link
-              key={index}
-              to={item.path}
-              onClick={() => setIsOpen(false)}
-              className={`d-flex align-items-center gap-2 text-decoration-none p-2 rounded ${
-  isActive(item.path)
-    ? "bg-success text-white"
-    : "text-dark fw-semibold"
-}`}
-            >
-              {item.icon} {item.name}
-            </Link>
-          ))}
+       <div className="d-flex flex-column gap-3">
+  {menuItems.map((item, index) => (
+    <Link
+      key={index}
+      to={item.path}
+      onClick={() => setIsOpen(false)}
+      style={{
+        background: isActive(item.path) ? "#16a34a" : "#f1f5f9", // active / normal
+        color: isActive(item.path) ? "#fff" : "#000",
+        padding: "12px 15px",
+        borderRadius: "10px",
+        textDecoration: "none",
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
+        fontWeight: "500",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.08)", // 🔥 card feel
+      }}
+    >
+      {item.icon} {item.name}
+    </Link>
+  ))}
+</div>
 
           {!token ? (
             <Link
