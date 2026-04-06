@@ -84,28 +84,13 @@ function Navbar() {
 
         {/* Mobile Hamburger */}
         <button
-          className="btn text-white fs-3 d-lg-none"
-          onClick={() => setIsOpen(true)}
-        >
-          <FaBars />
-        </button>
+  className="btn text-white fs-3 d-lg-none"
+  onClick={() => setIsOpen(!isOpen)} // 🔥 toggle
+>
+  {isOpen ? <FaTimes /> : <FaBars />}
+</button>
       </div>
 
-      {/* 🔥 FULL SCREEN SLIDING MENU */}
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          right: 0,
-          height: "100vh",         // ✅ full height
-          width: "270px",
-          background: "#ffffff",   // ✅ solid background
-          zIndex: 9999,
-          transform: isOpen ? "translateX(0)" : "translateX(100%)",
-          transition: "0.3s ease-in-out",
-          padding: "20px",
-        }}
-      >
         {/* Header */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h5 className="fw-bold">Menu</h5>
@@ -115,54 +100,67 @@ function Navbar() {
         </div>
 
         {/* Menu Items */}
-        <div className="d-flex flex-column gap-3">
-          {menuItems.map((item, index) => (
-            <Link
-              key={index}
-              to={item.path}
-              onClick={() => setIsOpen(false)}
-              style={{
-                background: isActive(item.path) ? "#16a34a" : "#f1f5f9",
-                color: isActive(item.path) ? "#fff" : "#000",
-                padding: "12px 15px",
-                borderRadius: "10px",
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                fontWeight: "500",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-              }}
-            >
-              {item.icon} {item.name}
-            </Link>
-          ))}
+        {isOpen && (
+  <div
+    className="d-lg-none position-absolute w-100"
+    style={{
+      top: "70px",
+      left: 0,
+      background: "#ffffff",
+      padding: "15px",
+      zIndex: 9999,
+      boxShadow: "0 5px 20px rgba(0,0,0,0.1)",
+      borderBottomLeftRadius: "15px",
+      borderBottomRightRadius: "15px",
+    }}
+  >
+    <div className="d-flex flex-column gap-3">
 
-          {/* Auth Buttons */}
-          {!token ? (
-            <Link
-              to="/login"
-              onClick={() => setIsOpen(false)}
-              className="btn btn-success mt-3"
-            >
-              Login
-            </Link>
-          ) : (
-            <>
-              <Link
-                to="/dashboard"
-                onClick={() => setIsOpen(false)}
-                className="btn btn-outline-success mt-3"
-              >
-                Dashboard
-              </Link>
-              <button onClick={logout} className="btn btn-danger">
-                Logout
-              </button>
-            </>
-          )}
-        </div>
-      </div>
+      {menuItems.map((item, index) => (
+        <Link
+          key={index}
+          to={item.path}
+          onClick={() => setIsOpen(false)}
+          style={{
+            background: isActive(item.path) ? "#16a34a" : "#f1f5f9",
+            color: isActive(item.path) ? "#fff" : "#000",
+            padding: "12px",
+            borderRadius: "10px",
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+          }}
+        >
+          {item.icon} {item.name}
+        </Link>
+      ))}
+
+      {!token ? (
+        <Link
+          to="/login"
+          onClick={() => setIsOpen(false)}
+          className="btn btn-success"
+        >
+          Login
+        </Link>
+      ) : (
+        <>
+          <Link
+            to="/dashboard"
+            onClick={() => setIsOpen(false)}
+            className="btn btn-outline-success"
+          >
+            Dashboard
+          </Link>
+          <button onClick={logout} className="btn btn-danger">
+            Logout
+          </button>
+        </>
+      )}
+    </div>
+  </div>
+)}
 
       {/* 🔥 DARK OVERLAY */}
       {isOpen && (
