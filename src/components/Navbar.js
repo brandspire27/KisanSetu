@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { FaBars, FaTimes, FaHome, FaBox, FaCloudSun, FaPhone, FaStore } from "react-icons/fa";
+import {
+  FaBars,
+  FaTimes,
+  FaHome,
+  FaBox,
+  FaCloudSun,
+  FaPhone,
+  FaStore,
+} from "react-icons/fa";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,10 +40,11 @@ function Navbar() {
         backdropFilter: "blur(10px)",
         background: "rgba(22, 163, 74, 0.9)",
         boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+        zIndex: 1000,
       }}
     >
       <div className="container d-flex justify-content-between align-items-center p-3">
-
+        
         {/* Logo */}
         <Link className="fw-bold fs-4 text-white text-decoration-none" to="/">
           🌾 Kisan Setu
@@ -82,18 +91,22 @@ function Navbar() {
         </button>
       </div>
 
-      {/* 🔥 Sliding Mobile Menu */}
+      {/* 🔥 FULL SCREEN SLIDING MENU */}
       <div
-  className="position-fixed top-0 end-0 h-100 shadow p-4"
-  style={{
-    width: "260px",
-    background: "#ffffff",
-    zIndex: 9999, // 🔥 increase this
-    transform: isOpen ? "translateX(0)" : "translateX(100%)",
-    transition: "0.3s ease-in-out",
-  }}
->
-        {/* Close Button */}
+        style={{
+          position: "fixed",
+          top: 0,
+          right: 0,
+          height: "100vh",         // ✅ full height
+          width: "270px",
+          background: "#ffffff",   // ✅ solid background
+          zIndex: 9999,
+          transform: isOpen ? "translateX(0)" : "translateX(100%)",
+          transition: "0.3s ease-in-out",
+          padding: "20px",
+        }}
+      >
+        {/* Header */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h5 className="fw-bold">Menu</h5>
           <button className="btn fs-4" onClick={() => setIsOpen(false)}>
@@ -102,29 +115,30 @@ function Navbar() {
         </div>
 
         {/* Menu Items */}
-       <div className="d-flex flex-column gap-3">
-  {menuItems.map((item, index) => (
-    <Link
-      key={index}
-      to={item.path}
-      onClick={() => setIsOpen(false)}
-      style={{
-        background: isActive(item.path) ? "#16a34a" : "#f1f5f9", // active / normal
-        color: isActive(item.path) ? "#fff" : "#000",
-        padding: "12px 15px",
-        borderRadius: "10px",
-        textDecoration: "none",
-        display: "flex",
-        alignItems: "center",
-        gap: "10px",
-        fontWeight: "500",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.08)", // 🔥 card feel
-      }}
-    >
-      {item.icon} {item.name}
-    </Link>
-  ))}
+        <div className="d-flex flex-column gap-3">
+          {menuItems.map((item, index) => (
+            <Link
+              key={index}
+              to={item.path}
+              onClick={() => setIsOpen(false)}
+              style={{
+                background: isActive(item.path) ? "#16a34a" : "#f1f5f9",
+                color: isActive(item.path) ? "#fff" : "#000",
+                padding: "12px 15px",
+                borderRadius: "10px",
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                fontWeight: "500",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+              }}
+            >
+              {item.icon} {item.name}
+            </Link>
+          ))}
 
+          {/* Auth Buttons */}
           {!token ? (
             <Link
               to="/login"
@@ -150,21 +164,21 @@ function Navbar() {
         </div>
       </div>
 
-      {/* Background Overlay */}
+      {/* 🔥 DARK OVERLAY */}
       {isOpen && (
-  <div
-    onClick={() => setIsOpen(false)}
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      background: "rgba(0,0,0,0.5)",
-      zIndex: 9998, // just below menu
-    }}
-  ></div>
-)}
+        <div
+          onClick={() => setIsOpen(false)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(0,0,0,0.5)",
+            zIndex: 9998,
+          }}
+        ></div>
+      )}
     </nav>
   );
 }
