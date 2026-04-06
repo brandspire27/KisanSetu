@@ -152,24 +152,35 @@ function Dashboard() {
 
           <h4 className="mb-3">My Products</h4>
           <div className="row">
-            {myProducts.map(product => (
+            {myProducts.map((product) => (
               <div key={product._id} className="col-md-4 mb-4">
                 <div className="card shadow border-0 h-100">
                   <img
-                    src={product.image || "https://via.placeholder.com/180x180?text=No+Image+URL"}
+                    src={product.image || "https://via.placeholder.com/180?text=No+Image+Provided"}
                     alt={product.name}
                     className="card-img-top"
-                    style={{ height: "180px", objectFit: "cover" }}
-                    onError={(e) => { 
-                      e.target.onerror = null; // Prevents infinite loop if placeholder also fails
-                      e.target.src = "https://via.placeholder.com/180x180?text=Invalid+Image+Link"; 
+                    style={{ 
+                      height: "180px", 
+                      width: "100%", 
+                      objectFit: "cover", 
+                      display: "block", 
+                      backgroundColor: "#f0f0f0" 
+                    }}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "https://via.placeholder.com/180?text=Broken+Link";
                     }}
                   />
                   <div className="card-body">
                     <h5 className="fw-bold">{product.name}</h5>
                     <p className="text-success">₹{product.price}</p>
                     <p>Quantity: {product.quantity}</p>
-                    <button className="btn btn-sm btn-danger" onClick={() => handleDeleteProduct(product._id)}>Delete</button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteProduct(product._id)}
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               </div>
