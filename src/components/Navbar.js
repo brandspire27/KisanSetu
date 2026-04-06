@@ -124,7 +124,6 @@ function Navbar() {
       {item.icon} {item.name}
     </Link>
   ))}
-</div>
 
           {!token ? (
             <Link
