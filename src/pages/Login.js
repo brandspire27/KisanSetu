@@ -48,7 +48,7 @@ function Login() {
  const sendOTP = async () => {
   const payload = email ? { email } : { mobile };
 
-  const res = await fetch("http://localhost:5000/api/auth/send-otp", {
+  const res = await fetch("https://kisansetu-backend-v50h.onrender.com/api/auth/send-otp", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -73,7 +73,7 @@ function Login() {
     ? { email, otp }
     : { mobile, otp };
 
-  const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
+  const res = await fetch("https://kisansetu-backend-v50h.onrender.com/api/auth/verify-otp", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -117,6 +117,49 @@ function Login() {
   }, [navigate]);
 
   return (
+    <div className="card p-4 shadow">
+
+  <h3 className="mb-3">Login with OTP</h3>
+
+  {step === 1 && (
+    <>
+      <input
+        type="text"
+        placeholder="Enter Email or Mobile"
+        className="form-control mb-3"
+        onChange={(e) => {
+          const value = e.target.value;
+          if (value.includes("@")) {
+            setEmail(value);
+            setMobile("");
+          } else {
+            setMobile(value);
+            setEmail("");
+          }
+        }}
+      />
+
+      <button className="btn btn-success w-100" onClick={sendOTP}>
+        Send OTP
+      </button>
+    </>
+  )}
+
+  {step === 2 && (
+    <>
+      <input
+        type="text"
+        placeholder="Enter OTP"
+        className="form-control mb-3"
+        onChange={(e) => setOtp(e.target.value)}
+      />
+
+      <button className="btn btn-primary w-100" onClick={verifyOTP}>
+        Verify & Login
+      </button>
+    </>
+  )}
+</div>
     <div style={styles.backgroundWrapper}>
       <div style={styles.blob1}></div>
       <div style={styles.blob2}></div>
