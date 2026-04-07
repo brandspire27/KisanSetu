@@ -1,44 +1,23 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
-  const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
-  const [step, setStep] = useState(1); // OTP step
-  const [useOTP, setUseOTP] = useState(false); // toggle
-  const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState(1); // 1 = send OTP, 2 = verify OTP
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [name, setName] = useState("");
 
   const navigate = useNavigate();
   const API = "https://kisansetu-backend-v50h.onrender.com/api/auth";
 
-  // ================= NORMAL LOGIN =================
-  const handleLogin = async () => {
-    if ((!email && !mobile) || !password) {
-      return alert("Enter credentials");
-    }
-
-    const payload = email ? { email, password } : { mobile, password };
-
-    try {
-      setLoading(true);
-      const res = await axios.post(`${API}/login`, payload);
-
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("role", res.data.role);
-
-      navigate("/dashboard");
-    } catch (err) {
-      alert(err.response?.data?.message || "Login Failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // ================= SEND OTP =================
   const sendOTP = async () => {
+    if (!email && !mobile) {
+      return alert("Enter Email or Mobile");
+    }
+
     const payload = email ? { email } : { mobile };
 
     try {
@@ -53,19 +32,22 @@ function Login() {
       const data = await res.json();
 
       if (res.ok) {
-        alert("OTP sent");
+        alert("OTP sent successfully");
         setStep(2);
       } else {
         alert(data.message);
       }
     } catch (error) {
       console.log(error);
+      alert("Something went wrong");
     }
   };
 
   // ================= VERIFY OTP =================
   const verifyOTP = async () => {
-    const payload = email ? { email, otp } : { mobile, otp };
+    const payload = email
+      ? { email, otp, name }
+      : { mobile, otp, name };
 
     try {
       const res = await fetch(`${API}/verify-otp`, {
@@ -82,47 +64,43 @@ function Login() {
         localStorage.setItem("token", data.token);
         localStorage.setItem("role", data.role);
 
+        alert("Login Successful 🚀");
         navigate("/dashboard");
       } else {
         alert(data.message);
       }
     } catch (error) {
       console.log(error);
+      alert("Verification failed");
     }
   };
 
-  // ================= REDIRECT IF LOGGED IN =================
+  // ================= AUTO REDIRECT =================
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) navigate("/dashboard");
   }, [navigate]);
 
   return (
-    <div className="container mt-5 d-flex justify-content-center">
-      <div className="card p-4 shadow" style={{ width: "400px" }}>
+    <div style={styles.container}>
+      <div className="card shadow p-4" style={styles.card}>
+        
+        <h3 className="text-center mb-3">
+          {isRegistering ? "Signup" : "Login"}
+        </h3>
 
-        <h3 className="text-center mb-3">Kisan Setu Login</h3>
+        {/* NAME (ONLY FOR SIGNUP) */}
+        {isRegistering && (
+          <input
+            type="text"
+            placeholder="Full Name"
+            className="form-control mb-3"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        )}
 
-        {/* 🔥 TOGGLE BUTTON */}
-        <div className="d-flex mb-3">
-          <button
-            className={`btn w-50 ${!useOTP ? "btn-success" : "btn-outline-success"}`}
-            onClick={() => setUseOTP(false)}
-          >
-            Password
-          </button>
-          <button
-            className={`btn w-50 ${useOTP ? "btn-success" : "btn-outline-success"}`}
-            onClick={() => {
-              setUseOTP(true);
-              setStep(1);
-            }}
-          >
-            OTP
-          </button>
-        </div>
-
-        {/* 🔥 EMAIL / MOBILE INPUT */}
+        {/* EMAIL OR MOBILE */}
         <input
           type="text"
           placeholder="Enter Email or Mobile"
@@ -139,57 +117,72 @@ function Login() {
           }}
         />
 
-        {/* ================= PASSWORD LOGIN ================= */}
-        {!useOTP && (
+        {/* STEP 1: SEND OTP */}
+        {step === 1 && (
+          <button className="btn btn-success w-100" onClick={sendOTP}>
+            Send OTP
+          </button>
+        )}
+
+        {/* STEP 2: VERIFY OTP */}
+        {step === 2 && (
           <>
             <input
-              type="password"
-              placeholder="Password"
-              className="form-control mb-3"
-              onChange={(e) => setPassword(e.target.value)}
+              type="text"
+              placeholder="Enter OTP"
+              className="form-control my-3"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
             />
 
             <button
-              className="btn btn-success w-100"
-              onClick={handleLogin}
-              disabled={loading}
+              className="btn btn-primary w-100"
+              onClick={verifyOTP}
             >
-              {loading ? "Loading..." : "Login"}
+              Verify & Continue
             </button>
           </>
         )}
 
-        {/* ================= OTP LOGIN ================= */}
-        {useOTP && (
-          <>
-            {step === 1 && (
-              <button className="btn btn-primary w-100" onClick={sendOTP}>
-                Send OTP
-              </button>
-            )}
-
-            {step === 2 && (
-              <>
-                <input
-                  type="text"
-                  placeholder="Enter OTP"
-                  className="form-control my-3"
-                  onChange={(e) => setOtp(e.target.value)}
-                />
-
-                <button
-                  className="btn btn-success w-100"
-                  onClick={verifyOTP}
-                >
-                  Verify & Login
-                </button>
-              </>
-            )}
-          </>
-        )}
+        {/* TOGGLE LOGIN / SIGNUP */}
+        <p className="text-center mt-3">
+          {isRegistering
+            ? "Already have an account?"
+            : "New user?"}
+          <span
+            style={styles.link}
+            onClick={() => {
+              setIsRegistering(!isRegistering);
+              setStep(1);
+            }}
+          >
+            {isRegistering ? " Login" : " Signup"}
+          </span>
+        </p>
       </div>
     </div>
   );
 }
 
 export default Login;
+
+// ================= STYLES =================
+const styles = {
+  container: {
+    height: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "#f5f5f5",
+  },
+  card: {
+    width: "350px",
+    borderRadius: "10px",
+  },
+  link: {
+    color: "green",
+    cursor: "pointer",
+    marginLeft: "5px",
+    fontWeight: "bold",
+  },
+};
