@@ -154,7 +154,7 @@ function Login() {
     </>
   )}
 </div>
-    <div style={styles.backgroundWrapper}></div>
+    <div style={styles.backgroundWrapper}>
       <div style={styles.blob1}></div>
       <div style={styles.blob2}></div>
 
@@ -182,7 +182,9 @@ function Login() {
               style={{ borderRadius: "0 8px 8px 0" }}
             >Mobile</button>
           </div>
-        )}
+              </div>
+              )}
+      
 
         <div className="form-group">
           {isRegistering && (
