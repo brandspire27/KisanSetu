@@ -4,254 +4,192 @@ import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
-  const [step, setStep] = useState(1); // 1 = email, 2 = OTP
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [role, setRole] = useState("");
-  const [isRegistering, setIsRegistering] = useState(false);
-  const [isAdminLogin, setIsAdminLogin] = useState(false); // New State for Admin
-  const [loginType, setLoginType] = useState("email");
-  const [registerType, setRegisterType] = useState("email");
+  const [otp, setOtp] = useState("");
+  const [step, setStep] = useState(1); // OTP step
+  const [useOTP, setUseOTP] = useState(false); // toggle
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const API = "https://kisansetu-backend-v50h.onrender.com";
+  const API = "https://kisansetu-backend-v50h.onrender.com/api/auth";
 
-  const handleLogin = () => {
-    // Basic Validation
-    if (isAdminLogin) {
-      if (!email || !password) return alert("Admin credentials required");
-    } else {
-      if ((loginType === "email" && (!email || !password)) || (loginType === "mobile" && (!mobile || !password))) {
-        alert("Please enter all credentials");
-        return;
-      }
+  // ================= NORMAL LOGIN =================
+  const handleLogin = async () => {
+    if ((!email && !mobile) || !password) {
+      return alert("Enter credentials");
     }
 
-    const loginData = isAdminLogin 
-      ? { email, password, role: "admin" } // Pass admin role explicitly if your backend requires it
-      : (loginType === "email" ? { email, password } : { mobile, password });
+    const payload = email ? { email, password } : { mobile, password };
 
-    setLoading(true);
-    axios.post(`${API}/auth/login`, loginData)
-      .then(res => {
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("role", res.data.role);
-        // Direct admins to a specific dashboard if needed
-        res.data.role === "admin" ? navigate("/admin-dashboard") : navigate("/dashboard");
-      })
-      .catch((err) => alert(err.response?.data?.message || "Login Failed"))
-      .finally(() => setLoading(false));
-  };
- const sendOTP = async () => {
-  const payload = email ? { email } : { mobile };
+    try {
+      setLoading(true);
+      const res = await axios.post(`${API}/login`, payload);
 
-  const res = await fetch("https://kisansetu-backend-v50h.onrender.com/api/auth/send-otp", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("role", res.data.role);
 
-  const data = await res.json();
-
-  if (res.ok) {
-    alert("OTP sent");
-    setStep(2);
-  } else {
-    alert(data.message);
-  }
-};
- const verifyOTP = async () => {
-  const payload = email
-    ? { email, otp }
-    : { mobile, otp };
-
-  const res = await fetch("https://kisansetu-backend-v50h.onrender.com/api/auth/verify-otp", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-
-  const data = await res.json();
-
-  if (res.ok) {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("role", data.role);
-    window.location.href = "/";
-  } else {
-    alert(data.message);
-  }
-};
-
-  const handleRegister = () => {
-    if (!role) return alert("Please select a role");
-    let registerData = { name, password, role };
-    if (registerType === "email") registerData.email = email;
-    else registerData.mobile = mobile;
-
-    setLoading(true);
-    axios.post(`${API}/auth/register`, registerData)
-      .then(() => {
-        alert("Registration Successful! Please Login.");
-        setIsRegistering(false);
-      })
-      .catch((err) => alert(err.response?.data?.message || "Registration Failed"))
-      .finally(() => setLoading(false));
+      navigate("/dashboard");
+    } catch (err) {
+      alert(err.response?.data?.message || "Login Failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // ================= SEND OTP =================
+  const sendOTP = async () => {
+    const payload = email ? { email } : { mobile };
+
+    try {
+      const res = await fetch(`${API}/send-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("OTP sent");
+        setStep(2);
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // ================= VERIFY OTP =================
+  const verifyOTP = async () => {
+    const payload = email ? { email, otp } : { mobile, otp };
+
+    try {
+      const res = await fetch(`${API}/verify-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.role);
+
+        navigate("/dashboard");
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // ================= REDIRECT IF LOGGED IN =================
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) navigate("/dashboard");
   }, [navigate]);
 
   return (
-    <div className="card p-4 shadow">
+    <div className="container mt-5 d-flex justify-content-center">
+      <div className="card p-4 shadow" style={{ width: "400px" }}>
 
-  <h3 className="mb-3">Login with OTP</h3>
+        <h3 className="text-center mb-3">Kisan Setu Login</h3>
 
-  {step === 1 && (
-    <>
-      <input
-        type="text"
-        placeholder="Enter Email or Mobile"
-        className="form-control mb-3"
-        onChange={(e) => {
-          const value = e.target.value;
-          if (value.includes("@")) {
-            setEmail(value);
-            setMobile("");
-          } else {
-            setMobile(value);
-            setEmail("");
-          }
-        }}
-      />
-
-      <button className="btn btn-success w-100" onClick={sendOTP}>
-        Send OTP
-      </button>
-    </>
-  )}
-
-  {step === 2 && (
-    <>
-      <input
-        type="text"
-        placeholder="Enter OTP"
-        className="form-control mb-3"
-        onChange={(e) => setOtp(e.target.value)}
-      />
-
-      <button className="btn btn-primary w-100" onClick={verifyOTP}>
-        Verify & Login
-      </button>
-    </>
-  )}
-</div>
-    <div style={styles.backgroundWrapper}>
-      <div style={styles.blob1}></div>
-      <div style={styles.blob2}></div>
-
-      <div className="card border-0 shadow-lg p-4" style={styles.glassCard}>
-        <div className="text-center mb-4">
-          <h2 className="fw-bold" style={{ color: isAdminLogin ? "#c62828" : "#1b5e20", letterSpacing: "1px" }}>
-            {isAdminLogin ? "KisanSetu Admin" : "KisanSetu"}
-          </h2>
-          <p className="text-muted small">
-            {isAdminLogin ? "Restricted Access Only" : (isRegistering ? "Join our farming community" : "Welcome back to the field")}
-          </p>
-        </div>
-
-        {/* Hide Type Selectors if Admin Login is active */}
-        {!isAdminLogin && (
-          <div className="btn-group w-100 mb-4" role="group">
-            <button 
-              className={`btn btn-sm ${(!isRegistering ? loginType : registerType) === 'email' ? 'btn-success' : 'btn-outline-success'}`}
-              onClick={() => isRegistering ? setRegisterType("email") : setLoginType("email")}
-              style={{ borderRadius: "8px 0 0 8px" }}
-            >Email</button>
-            <button 
-              className={`btn btn-sm ${(!isRegistering ? loginType : registerType) === 'mobile' ? 'btn-success' : 'btn-outline-success'}`}
-              onClick={() => isRegistering ? setRegisterType("mobile") : setLoginType("mobile")}
-              style={{ borderRadius: "0 8px 8px 0" }}
-            >Mobile</button>
-          </div>
-              </div>
-              )}
-      
-
-        <div className="form-group">
-          {isRegistering && (
-            <input className="form-control mb-3 py-2 border-0 shadow-sm" type="text" placeholder="Full Name" value={name} onChange={(e) => setName(e.target.value)} />
-          )}
-
-          {/* Admin Login uses Email by default in this example */}
-          <input
-            className="form-control mb-3 py-2 border-0 shadow-sm"
-            type={(isAdminLogin || (!isRegistering ? loginType : registerType) === "email") ? "email" : "text"}
-            placeholder={isAdminLogin ? "Admin Email" : ((!isRegistering ? loginType : registerType) === "email" ? "Email Address" : "Mobile Number")}
-            value={(isAdminLogin || (!isRegistering ? loginType : registerType) === "email") ? email : mobile}
-            onChange={(e) => (isAdminLogin || (!isRegistering ? loginType : registerType) === "email") ? setEmail(e.target.value) : setMobile(e.target.value)}
-          />
-
-          {isRegistering && !isAdminLogin && (
-            <select className="form-select mb-3 py-2 border-0 shadow-sm" value={role} onChange={(e) => setRole(e.target.value)}>
-              <option value="">Select Role</option>
-              <option value="farmer">Farmer</option>
-              <option value="consumer">Consumer</option>
-            </select>
-          )}
-
-          <input className="form-control mb-4 py-2 border-0 shadow-sm" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-
+        {/* 🔥 TOGGLE BUTTON */}
+        <div className="d-flex mb-3">
           <button
-            className="btn w-100 py-2 fw-bold shadow d-flex align-items-center justify-content-center"
-            style={{ 
-                borderRadius: "10px", 
-                background: isAdminLogin ? "linear-gradient(45deg, #b71c1c, #e53935)" : "linear-gradient(45deg, #2e7d32, #43a047)",
-                color: "white" 
-            }}
-            onClick={isRegistering ? handleRegister : handleLogin}
-            disabled={loading}
+            className={`btn w-50 ${!useOTP ? "btn-success" : "btn-outline-success"}`}
+            onClick={() => setUseOTP(false)}
           >
-            {loading ? <span className="spinner-border spinner-border-sm me-2"></span> : (isAdminLogin ? "Admin Login" : (isRegistering ? "Register" : "Login"))}
+            Password
+          </button>
+          <button
+            className={`btn w-50 ${useOTP ? "btn-success" : "btn-outline-success"}`}
+            onClick={() => {
+              setUseOTP(true);
+              setStep(1);
+            }}
+          >
+            OTP
           </button>
         </div>
 
-        <div className="text-center mt-4">
-          {!isAdminLogin && (
-            <p className="small text-muted mb-2">
-              {isRegistering ? "Already have an account?" : "Don't have an account?"}
-              <span className="text-success fw-bold ms-2" style={{ cursor: "pointer" }} onClick={() => setIsRegistering(!isRegistering)}>
-                {isRegistering ? "Sign In" : "Sign Up"}
-              </span>
-            </p>
-          )}
-          
-          {/* Admin Toggle */}
-          <p className="small text-muted">
-            {isAdminLogin ? "Are you a User?" : "Are you an Admin?"}
-            <span 
-              className="fw-bold ms-2" 
-              style={{ cursor: "pointer", color: isAdminLogin ? "#2e7d32" : "#b71c1c" }} 
-              onClick={() => {
-                setIsAdminLogin(!isAdminLogin);
-                setIsRegistering(false); // Can't register as admin from here
-              }}
+        {/* 🔥 EMAIL / MOBILE INPUT */}
+        <input
+          type="text"
+          placeholder="Enter Email or Mobile"
+          className="form-control mb-3"
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value.includes("@")) {
+              setEmail(value);
+              setMobile("");
+            } else {
+              setMobile(value);
+              setEmail("");
+            }
+          }}
+        />
+
+        {/* ================= PASSWORD LOGIN ================= */}
+        {!useOTP && (
+          <>
+            <input
+              type="password"
+              placeholder="Password"
+              className="form-control mb-3"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <button
+              className="btn btn-success w-100"
+              onClick={handleLogin}
+              disabled={loading}
             >
-              {isAdminLogin ? "User Login" : "Admin Login"}
-            </span>
-          </p>
-        </div>
+              {loading ? "Loading..." : "Login"}
+            </button>
+          </>
+        )}
+
+        {/* ================= OTP LOGIN ================= */}
+        {useOTP && (
+          <>
+            {step === 1 && (
+              <button className="btn btn-primary w-100" onClick={sendOTP}>
+                Send OTP
+              </button>
+            )}
+
+            {step === 2 && (
+              <>
+                <input
+                  type="text"
+                  placeholder="Enter OTP"
+                  className="form-control my-3"
+                  onChange={(e) => setOtp(e.target.value)}
+                />
+
+                <button
+                  className="btn btn-success w-100"
+                  onClick={verifyOTP}
+                >
+                  Verify & Login
+                </button>
+              </>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
 }
 
-// ... styles remain the same ...
+export default Login;
