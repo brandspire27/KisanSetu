@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [step, setStep] = useState(1); // 1 = email, 2 = OTP
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -43,6 +45,55 @@ function Login() {
       .catch((err) => alert(err.response?.data?.message || "Login Failed"))
       .finally(() => setLoading(false));
   };
+ const sendOTP = async () => {
+  const payload = email ? { email } : { mobile };
+
+  const res = await fetch("http://localhost:5000/api/auth/send-otp", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json();
+
+  if (res.ok) {
+    alert("OTP sent");
+    setStep(2);
+  } else {
+      alert(data.message || "Error sending OTP");
+    }
+  catch (error) {
+    console.log(error);
+  }
+};
+  const verifyOTP = async () => {
+  const payload = email
+    ? { email, otp }
+    : { mobile, otp };
+
+  const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json();
+
+  if (res.ok) {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("role", data.role);
+    window.location.href = "/";
+  } else {
+      alert(data.message || "Invalid OTP");
+    }
+ catch (error) {
+    console.log(error);
+  }
+};
 
   const handleRegister = () => {
     if (!role) return alert("Please select a role");
