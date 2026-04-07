@@ -64,7 +64,7 @@ function Login() {
   } else {
       alert(data.message || "Error sending OTP");
     }
-  catch (error) {
+ } catch (error) {
     console.log(error);
   }
 };
@@ -90,7 +90,7 @@ function Login() {
   } else {
       alert(data.message || "Invalid OTP");
     }
- catch (error) {
+  } catch (error) {
     console.log(error);
   }
 };
