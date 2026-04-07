@@ -62,13 +62,10 @@ function Login() {
     alert("OTP sent");
     setStep(2);
   } else {
-      alert(data.message || "Error sending OTP");
-    }
- } catch (error) {
-    console.log(error);
+    alert(data.message);
   }
 };
-  const verifyOTP = async () => {
+ const verifyOTP = async () => {
   const payload = email
     ? { email, otp }
     : { mobile, otp };
@@ -88,10 +85,7 @@ function Login() {
     localStorage.setItem("role", data.role);
     window.location.href = "/";
   } else {
-      alert(data.message || "Invalid OTP");
-    }
-  } catch (error) {
-    console.log(error);
+    alert(data.message);
   }
 };
 
