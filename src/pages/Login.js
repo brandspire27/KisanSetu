@@ -10,7 +10,7 @@ function Login() {
   const [name, setName] = useState("");
 
   const navigate = useNavigate();
-  const API = "https://kisansetu-backend-v50h.onrender.com/api/auth";
+  const API = "https://kisansetu-backend-v50h.onrender.com/auth";
 
   // ================= SEND OTP =================
   const sendOTP = async () => {
