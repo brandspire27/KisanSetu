@@ -154,7 +154,7 @@ function Login() {
     </>
   )}
 </div>
-    <div style={styles.backgroundWrapper}>
+    <div style={styles.backgroundWrapper}></div>
       <div style={styles.blob1}></div>
       <div style={styles.blob2}></div>
 
