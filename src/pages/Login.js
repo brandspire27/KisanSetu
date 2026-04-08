@@ -82,87 +82,158 @@ function Login() {
   }, [navigate]);
 
   return (
-    <div style={styles.container}>
-      <div className="card shadow p-4" style={styles.card}>
+  <div className="container-fluid min-vh-100 d-flex align-items-center">
+
+    <div className="row w-100">
+
+      {/* LEFT SIDE (Branding) */}
+      <div className="col-md-6 d-none d-md-flex flex-column justify-content-center align-items-center bg-success text-white p-5">
         
-        <h3 className="text-center mb-3">
-          {isRegistering ? "Signup" : "Login"}
-        </h3>
-
-        {/* NAME (ONLY FOR SIGNUP) */}
-        {isRegistering && (
-          <input
-            type="text"
-            placeholder="Full Name"
-            className="form-control mb-3"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        )}
-
-        {/* EMAIL OR MOBILE */}
-        <input
-          type="text"
-          placeholder="Enter Email or Mobile"
-          className="form-control mb-3"
-          onChange={(e) => {
-            const value = e.target.value;
-            if (value.includes("@")) {
-              setEmail(value);
-              setMobile("");
-            } else {
-              setMobile(value);
-              setEmail("");
-            }
-          }}
-        />
-
-        {/* STEP 1: SEND OTP */}
-        {step === 1 && (
-          <button className="btn btn-success w-100" onClick={sendOTP}>
-            Send OTP
-          </button>
-        )}
-
-        {/* STEP 2: VERIFY OTP */}
-        {step === 2 && (
-          <>
-            <input
-              type="text"
-              placeholder="Enter OTP"
-              className="form-control my-3"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-            />
-
-            <button
-              className="btn btn-primary w-100"
-              onClick={verifyOTP}
-            >
-              Verify & Continue
-            </button>
-          </>
-        )}
-
-        {/* TOGGLE LOGIN / SIGNUP */}
-        <p className="text-center mt-3">
-          {isRegistering
-            ? "Already have an account?"
-            : "New user?"}
-          <span
-            style={styles.link}
-            onClick={() => {
-              setIsRegistering(!isRegistering);
-              setStep(1);
-            }}
-          >
-            {isRegistering ? " Login" : " Signup"}
-          </span>
+        <h1 className="fw-bold display-4">🌾 Kisan Setu</h1>
+        
+        <p className="mt-3 text-center">
+          Connecting farmers directly with consumers for fresh and fair products.
         </p>
+
+        <img 
+          src="https://images.unsplash.com/photo-1605000797499-95a51c5269ae"
+          alt="farm"
+          className="img-fluid mt-4 rounded shadow"
+          style={{ maxHeight: "300px", objectFit: "cover" }}
+        />
       </div>
+
+      {/* RIGHT SIDE (FORM) */}
+      <div className="col-md-6 d-flex justify-content-center align-items-center">
+
+        <div className="card shadow-lg p-5" style={{ maxWidth: "400px", width: "100%", borderRadius: "16px" }}>
+
+          <h2 className="text-center fw-bold mb-4">
+            {isRegistering ? "Create Account" : "Login"}
+          </h2>
+
+          {/* NAME (REGISTER) */}
+          {isRegistering && (
+            <input
+              className="form-control mb-3"
+              type="text"
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          )}
+
+          {/* LOGIN TYPE */}
+          {!isRegistering && (
+            <>
+              <select
+                className="form-control mb-3"
+                value={loginType}
+                onChange={(e) => setLoginType(e.target.value)}
+              >
+                <option value="email">Login with Email</option>
+                <option value="mobile">Login with Mobile</option>
+              </select>
+
+              {loginType === "email" ? (
+                <input
+                  className="form-control mb-3"
+                  type="email"
+                  placeholder="Enter Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              ) : (
+                <input
+                  className="form-control mb-3"
+                  type="text"
+                  placeholder="Enter Mobile"
+                  value={mobile}
+                  onChange={(e) => setMobile(e.target.value)}
+                />
+              )}
+            </>
+          )}
+
+          {/* REGISTER TYPE */}
+          {isRegistering && (
+            <>
+              <select
+                className="form-control mb-3"
+                value={registerType}
+                onChange={(e) => setRegisterType(e.target.value)}
+              >
+                <option value="email">Register with Email</option>
+                <option value="mobile">Register with Mobile</option>
+              </select>
+
+              {registerType === "email" ? (
+                <input
+                  className="form-control mb-3"
+                  type="email"
+                  placeholder="Enter Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              ) : (
+                <input
+                  className="form-control mb-3"
+                  type="text"
+                  placeholder="Enter Mobile"
+                  value={mobile}
+                  onChange={(e) => setMobile(e.target.value)}
+                />
+              )}
+
+              <select
+                className="form-control mb-3"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+              >
+                <option value="">Select Role</option>
+                <option value="farmer">Farmer</option>
+                <option value="consumer">Consumer</option>
+              </select>
+            </>
+          )}
+
+          {/* PASSWORD */}
+          <input
+            className="form-control mb-4"
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          {/* BUTTON */}
+          <button
+            className="btn btn-success w-100 fw-bold py-2"
+            onClick={isRegistering ? handleRegister : handleLogin}
+          >
+            {isRegistering ? "Create Account" : "Login"}
+          </button>
+
+          {/* SWITCH */}
+          <p className="text-center mt-4">
+            {isRegistering ? "Already have an account?" : "New user?"}
+            <span
+              className="text-success fw-bold ms-2"
+              style={{ cursor: "pointer" }}
+              onClick={() => setIsRegistering(!isRegistering)}
+            >
+              {isRegistering ? "Login" : "Signup"}
+            </span>
+          </p>
+
+        </div>
+
+      </div>
+
     </div>
-  );
-}
+
+  </div>
+);
 
 export default Login;
 
