@@ -235,7 +235,6 @@ function Login() {
   </div>
 );
 
-export default Login;
 
 // ================= STYLES =================
 const styles = {
