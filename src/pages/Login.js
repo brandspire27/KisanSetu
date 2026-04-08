@@ -10,7 +10,7 @@ function Login() {
   const [role, setRole] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
   const [loginType, setLoginType] = useState("email");
-  const [registerType, setRegisterType] = useState("email");
+ 
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
