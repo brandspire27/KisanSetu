@@ -11,6 +11,8 @@ function Login() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [loginType, setLoginType] = useState("email");
   const [showPassword, setShowPassword] = useState(false);
+  const [otp, setOtp] = useState("");
+const [otpSent, setOtpSent] = useState(false);
 
   const navigate = useNavigate();
   const API = "https://kisansetu-backend-v50h.onrender.com";
@@ -54,29 +56,36 @@ function Login() {
   }, [navigate]);
 
   // REGISTER
-  const handleRegister = () => {
-    let registerData = {
+ const handleRegister = () => {
+  if (!otpSent) {
+    // Step 1: Send OTP
+    axios.post(`${API}/auth/send-otp`, {
+      email,
+    })
+    .then(() => {
+      alert("OTP sent to your email");
+      setOtpSent(true);
+    })
+    .catch(() => alert("Failed to send OTP"));
+  } else {
+    // Step 2: Verify OTP + Register
+    axios.post(`${API}/auth/register`, {
       name,
+      email,
       password,
       role,
-    };
-
-    if (email) {
-      registerData.email = email;
-    } else {
-      registerData.mobile = mobile;
-    }
-
-    axios
-      .post(`${API}/auth/register`, registerData)
-      .then(() => {
-        alert("Registration Successful!");
-        setIsRegistering(false);
-      })
-      .catch((err) => {
-        alert(err.response?.data?.message || "Registration Failed");
-      });
-  };
+      otp
+    })
+    .then(() => {
+      alert("Registration successful!");
+      setIsRegistering(false);
+      setOtpSent(false);
+    })
+    .catch(err => {
+      alert(err.response?.data?.message || "Invalid OTP");
+    });
+  }
+};
 
   return (
     <div className="container-fluid min-vh-100 d-flex align-items-center">
@@ -142,25 +151,50 @@ function Login() {
             )}
 
             {isRegistering && (
-              <>
-                <input
-                  className="form-control mb-3"
-                  placeholder="Email or Mobile"
-                  value={email || mobile}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
+  <>
+    <input
+      className="form-control mb-3"
+      placeholder="Full Name"
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+    />
 
-                <select
-                  className="form-control mb-3"
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                >
-                  <option value="">Select Role</option>
-                  <option value="farmer">Farmer</option>
-                  <option value="consumer">Consumer</option>
-                </select>
-              </>
-            )}
+    <input
+      className="form-control mb-3"
+      placeholder="Email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+    />
+
+    <input
+      className="form-control mb-3"
+      type="password"
+      placeholder="Password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+    />
+
+    <select
+      className="form-control mb-3"
+      value={role}
+      onChange={(e) => setRole(e.target.value)}
+    >
+      <option value="">Select Role</option>
+      <option value="farmer">Farmer</option>
+      <option value="consumer">Consumer</option>
+    </select>
+
+    {/* OTP FIELD */}
+    {otpSent && (
+      <input
+        className="form-control mb-3"
+        placeholder="Enter OTP"
+        value={otp}
+        onChange={(e) => setOtp(e.target.value)}
+      />
+    )}
+  </>
+)}
 
             {/* PASSWORD */}
             <div className="position-relative mb-4">
@@ -187,11 +221,11 @@ function Login() {
             </div>
 
             <button
-              className="btn btn-success w-100 fw-bold py-2"
-              onClick={isRegistering ? handleRegister : handleLogin}
-            >
-              {isRegistering ? "Create Account" : "Login"}
-            </button>
+  className="btn btn-success w-100 fw-bold py-2"
+  onClick={handleRegister}
+>
+  {otpSent ? "Verify OTP & Register" : "Send OTP"}
+</button>
 
             <p className="text-center mt-4">
               {isRegistering
