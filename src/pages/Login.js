@@ -10,7 +10,6 @@ function Login() {
   const [role, setRole] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
   const [loginType, setLoginType] = useState("email");
- 
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
@@ -33,8 +32,9 @@ function Login() {
         ? { email, password }
         : { mobile, password };
 
-    axios.post(`${API}/auth/login`, loginData)
-      .then(res => {
+    axios
+      .post(`${API}/auth/login`, loginData)
+      .then((res) => {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("role", res.data.role);
         alert("Login Successful!");
@@ -45,7 +45,7 @@ function Login() {
       });
   };
 
-  // AUTO LOGIN CHECK
+  // AUTO LOGIN
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -58,16 +58,17 @@ function Login() {
     let registerData = {
       name,
       password,
-      role
+      role,
     };
 
-    if (registerType === "email") {
+    if (email) {
       registerData.email = email;
     } else {
       registerData.mobile = mobile;
     }
 
-    axios.post(`${API}/auth/register`, registerData)
+    axios
+      .post(`${API}/auth/register`, registerData)
       .then(() => {
         alert("Registration Successful!");
         setIsRegistering(false);
@@ -79,7 +80,6 @@ function Login() {
 
   return (
     <div className="container-fluid min-vh-100 d-flex align-items-center">
-
       <div className="row w-100">
 
         {/* LEFT SIDE */}
@@ -92,13 +92,15 @@ function Login() {
 
         {/* RIGHT SIDE */}
         <div className="col-md-6 d-flex justify-content-center align-items-center">
-
-          <div className="card shadow-lg p-5" style={{ maxWidth: "400px", width: "100%", borderRadius: "16px" }}>
-
+          <div
+            className="card shadow-lg p-5"
+            style={{ maxWidth: "400px", width: "100%", borderRadius: "16px" }}
+          >
             <h3 className="text-center fw-bold mb-4">
               {isRegistering ? "Create Account" : "Login"}
             </h3>
 
+            {/* NAME */}
             {isRegistering && (
               <input
                 className="form-control mb-3"
@@ -108,6 +110,7 @@ function Login() {
               />
             )}
 
+            {/* EMAIL / MOBILE */}
             {!isRegistering && (
               <>
                 <select
@@ -176,7 +179,7 @@ function Login() {
                   right: "10px",
                   top: "50%",
                   transform: "translateY(-50%)",
-                  cursor: "pointer"
+                  cursor: "pointer",
                 }}
               >
                 {showPassword ? "🙈" : "👁️"}
@@ -191,7 +194,9 @@ function Login() {
             </button>
 
             <p className="text-center mt-4">
-              {isRegistering ? "Already have an account?" : "New user?"}
+              {isRegistering
+                ? "Already have an account?"
+                : "New user?"}
               <span
                 className="text-success fw-bold ms-2"
                 style={{ cursor: "pointer" }}
@@ -200,13 +205,10 @@ function Login() {
                 {isRegistering ? "Login" : "Signup"}
               </span>
             </p>
-
           </div>
-
         </div>
 
       </div>
-
     </div>
   );
 }
