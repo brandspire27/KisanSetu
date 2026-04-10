@@ -1,17 +1,46 @@
-import connectDB from "@/lib/db";
-import User from "@/models/User";
+import { useEffect, useState } from "react";
 
-export default async function handler(req, res) {
-  await connectDB();
+export default function Users() {
+  const [users, setUsers] = useState([]);
 
-  if (req.method === "GET") {
-    const users = await User.find().sort({ createdAt: -1 });
-    return res.json(users);
-  }
+  const fetchUsers = async () => {
+    const res = await fetch("/api/admin/users");
+    const data = await res.json();
+    setUsers(data);
+  };
 
-  if (req.method === "DELETE") {
-    const { id } = req.body;
-    await User.findByIdAndDelete(id);
-    return res.json({ message: "User deleted" });
-  }
+  const deleteUser = async (id) => {
+    await fetch("/api/admin/users", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id }),
+    });
+
+    fetchUsers();
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  return (
+    <div style={{ padding: "20px" }}>
+      <h1>All Users</h1>
+
+      {users.length === 0 && <p>No users found</p>}
+
+      {users.map((user) => (
+        <div key={user._id} style={{ marginBottom: "10px" }}>
+          <p>
+            {user.name} - {user.email}
+          </p>
+          <button onClick={() => deleteUser(user._id)}>
+            Delete
+          </button>
+        </div>
+      ))}
+    </div>
+  );
 }
