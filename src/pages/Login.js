@@ -12,7 +12,7 @@ function Login() {
   const [loginType, setLoginType] = useState("email");
   const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState("");
-const [otpSent, setOtpSent] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
 
   const navigate = useNavigate();
   const API = "https://kisansetu-backend-v50h.onrender.com";
@@ -55,37 +55,50 @@ const [otpSent, setOtpSent] = useState(false);
     }
   }, [navigate]);
 
-  // REGISTER
- const handleRegister = () => {
-  if (!otpSent) {
-    // Step 1: Send OTP
-    axios.post(`${API}/auth/send-otp`, {
-      email,
-    })
-    .then(() => {
-      alert("OTP sent to your email");
-      setOtpSent(true);
-    })
-    .catch(() => alert("Failed to send OTP"));
-  } else {
-    // Step 2: Verify OTP + Register
-    axios.post(`${API}/auth/register`, {
-      name,
-      email,
-      password,
-      role,
-      otp
-    })
-    .then(() => {
-      alert("Registration successful!");
-      setIsRegistering(false);
-      setOtpSent(false);
-    })
-    .catch(err => {
-      alert(err.response?.data?.message || "Invalid OTP");
-    });
-  }
-};
+  // REGISTER WITH OTP
+  const handleRegister = () => {
+    if (!email) {
+      alert("Please enter email");
+      return;
+    }
+
+    if (!otpSent) {
+      // STEP 1: SEND OTP
+      axios.post(`${API}/auth/send-otp`, { email })
+        .then(() => {
+          alert("OTP sent to your email");
+          setOtpSent(true);
+        })
+        .catch(() => alert("Failed to send OTP"));
+    } else {
+      // STEP 2: VERIFY OTP + REGISTER
+      if (!name || !password || !role || !otp) {
+        alert("Please fill all fields including OTP");
+        return;
+      }
+
+      axios.post(`${API}/auth/register`, {
+        name,
+        email,
+        password,
+        role,
+        otp
+      })
+      .then(() => {
+        alert("Registration successful!");
+        setIsRegistering(false);
+        setOtpSent(false);
+        setOtp("");
+        setName("");
+        setEmail("");
+        setPassword("");
+        setRole("");
+      })
+      .catch((err) => {
+        alert(err.response?.data?.message || "Invalid OTP");
+      });
+    }
+  };
 
   return (
     <div className="container-fluid min-vh-100 d-flex align-items-center">
@@ -109,17 +122,7 @@ const [otpSent, setOtpSent] = useState(false);
               {isRegistering ? "Create Account" : "Login"}
             </h3>
 
-            {/* NAME */}
-            {isRegistering && (
-              <input
-                className="form-control mb-3"
-                placeholder="Full Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            )}
-
-            {/* EMAIL / MOBILE */}
+            {/* LOGIN MODE */}
             {!isRegistering && (
               <>
                 <select
@@ -150,82 +153,89 @@ const [otpSent, setOtpSent] = useState(false);
               </>
             )}
 
+            {/* REGISTER MODE */}
             {isRegistering && (
-  <>
-    <input
-      className="form-control mb-3"
-      placeholder="Full Name"
-      value={name}
-      onChange={(e) => setName(e.target.value)}
-    />
+              <>
+                <input
+                  className="form-control mb-3"
+                  placeholder="Full Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
 
-    <input
-      className="form-control mb-3"
-      placeholder="Email"
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
-    />
+                <input
+                  className="form-control mb-3"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
 
-    <input
-      className="form-control mb-3"
-      type="password"
-      placeholder="Password"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-    />
+                <input
+                  className="form-control mb-3"
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
 
-    <select
-      className="form-control mb-3"
-      value={role}
-      onChange={(e) => setRole(e.target.value)}
-    >
-      <option value="">Select Role</option>
-      <option value="farmer">Farmer</option>
-      <option value="consumer">Consumer</option>
-    </select>
+                <select
+                  className="form-control mb-3"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                >
+                  <option value="">Select Role</option>
+                  <option value="farmer">Farmer</option>
+                  <option value="consumer">Consumer</option>
+                </select>
 
-    {/* OTP FIELD */}
-    {otpSent && (
-      <input
-        className="form-control mb-3"
-        placeholder="Enter OTP"
-        value={otp}
-        onChange={(e) => setOtp(e.target.value)}
-      />
-    )}
-  </>
-)}
+                {/* OTP FIELD */}
+                {otpSent && (
+                  <input
+                    className="form-control mb-3"
+                    placeholder="Enter OTP"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                  />
+                )}
+              </>
+            )}
 
-            {/* PASSWORD */}
-            <div className="position-relative mb-4">
-              <input
-                type={showPassword ? "text" : "password"}
-                className="form-control"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+            {/* PASSWORD (LOGIN ONLY) */}
+            {!isRegistering && (
+              <div className="position-relative mb-4">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="form-control"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
 
-              <span
-                onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: "absolute",
-                  right: "10px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  cursor: "pointer",
-                }}
-              >
-                {showPassword ? "🙈" : "👁️"}
-              </span>
-            </div>
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: "absolute",
+                    right: "10px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    cursor: "pointer",
+                  }}
+                >
+                  {showPassword ? "🙈" : "👁️"}
+                </span>
+              </div>
+            )}
 
+            {/* BUTTON */}
             <button
-  className="btn btn-success w-100 fw-bold py-2"
-  onClick={handleRegister}
->
-  {otpSent ? "Verify OTP & Register" : "Send OTP"}
-</button>
+              className="btn btn-success w-100 fw-bold py-2"
+              onClick={isRegistering ? handleRegister : handleLogin}
+              disabled={isRegistering && !otpSent && !email}
+            >
+              {isRegistering
+                ? (otpSent ? "Verify OTP & Register" : "Send OTP")
+                : "Login"}
+            </button>
 
             <p className="text-center mt-4">
               {isRegistering
@@ -234,11 +244,15 @@ const [otpSent, setOtpSent] = useState(false);
               <span
                 className="text-success fw-bold ms-2"
                 style={{ cursor: "pointer" }}
-                onClick={() => setIsRegistering(!isRegistering)}
+                onClick={() => {
+                  setIsRegistering(!isRegistering);
+                  setOtpSent(false);
+                }}
               >
                 {isRegistering ? "Login" : "Signup"}
               </span>
             </p>
+
           </div>
         </div>
 
