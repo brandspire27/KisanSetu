@@ -28,7 +28,7 @@ function Navbar() {
   const menuItems = [
     { name: "Home", path: "/", icon: <FaHome /> },
     { name: "Products", path: "/products", icon: <FaBox /> },
-    { name: "Mandi", path: "/mandi", icon: <FaStore /> },
+    
     { name: "Weather", path: "/weather", icon: <FaCloudSun /> },
     { name: "Contact", path: "/contact", icon: <FaPhone /> },
   ];
