@@ -7,7 +7,7 @@ import {
   FaBox,
   FaCloudSun,
   FaPhone,
-  FaStore,
+
 } from "react-icons/fa";
 
 function Navbar() {
