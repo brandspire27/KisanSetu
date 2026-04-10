@@ -65,11 +65,16 @@ function Login() {
     if (!otpSent) {
       // STEP 1: SEND OTP
       axios.post(`${API}/auth/send-otp`, { email })
-        .then(() => {
+        .then((res) => {
+          console.log("OTP Response:", res.data); // Helpful for debugging
           alert("OTP sent to your email");
-          setOtpSent(true);
+          setOtpSent(true); // This triggers the UI to show the OTP field
         })
-        .catch(() => alert("Failed to send OTP"));
+        .catch((err) => {
+          console.error("OTP Error:", err);
+          // Now alerts the exact reason the OTP failed (e.g., "User already exists")
+          alert(err.response?.data?.message || "Failed to send OTP. Check console.");
+        });
     } else {
       // STEP 2: VERIFY OTP + REGISTER
       if (!name || !password || !role || !otp) {
@@ -165,6 +170,7 @@ function Login() {
 
                 <input
                   className="form-control mb-3"
+                  type="email"
                   placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -191,10 +197,11 @@ function Login() {
                 {/* OTP FIELD */}
                 {otpSent && (
                   <input
-                    className="form-control mb-3"
+                    className="form-control mb-3 border-success"
                     placeholder="Enter OTP"
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
+                    autoFocus
                   />
                 )}
               </>
@@ -228,6 +235,7 @@ function Login() {
 
             {/* BUTTON */}
             <button
+              type="button" 
               className="btn btn-success w-100 fw-bold py-2"
               onClick={isRegistering ? handleRegister : handleLogin}
               disabled={isRegistering && !otpSent && !email}
@@ -246,7 +254,7 @@ function Login() {
                 style={{ cursor: "pointer" }}
                 onClick={() => {
                   setIsRegistering(!isRegistering);
-                  setOtpSent(false);
+                  setOtpSent(false); // Reset OTP state when switching modes
                 }}
               >
                 {isRegistering ? "Login" : "Signup"}
