@@ -11,6 +11,7 @@ function Login() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [loginType, setLoginType] = useState("email");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // <-- Added loading state
 
   const navigate = useNavigate();
   const API = "https://kisansetu-backend-v50h.onrender.com";
@@ -32,15 +33,19 @@ function Login() {
         ? { email, password }
         : { mobile, password };
 
+    setIsLoading(true); // <-- Start loading
+
     axios
       .post(`${API}/auth/login`, loginData)
       .then((res) => {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("role", res.data.role);
         alert("Login Successful!");
+        setIsLoading(false); // <-- Stop loading
         navigate("/dashboard");
       })
       .catch((err) => {
+        setIsLoading(false); // <-- Stop loading on error
         alert(err.response?.data?.message || "Login Failed");
       });
   };
@@ -60,6 +65,8 @@ function Login() {
       return;
     }
 
+    setIsLoading(true); // <-- Start loading
+
     axios.post(`${API}/auth/register`, {
       name,
       email,
@@ -68,6 +75,7 @@ function Login() {
     })
     .then(() => {
       alert("Registration successful!");
+      setIsLoading(false); // <-- Stop loading
       setIsRegistering(false);
       setName("");
       setEmail("");
@@ -75,6 +83,7 @@ function Login() {
       setRole("");
     })
     .catch((err) => {
+      setIsLoading(false); // <-- Stop loading on error
       alert(err.response?.data?.message || "Registration Failed");
     });
   };
@@ -196,13 +205,21 @@ function Login() {
               </div>
             )}
 
-            {/* BUTTON */}
+            {/* BUTTON WITH LOADING ANIMATION */}
             <button
               type="button" 
-              className="btn btn-success w-100 fw-bold py-2"
+              className="btn btn-success w-100 fw-bold py-2 d-flex justify-content-center align-items-center"
               onClick={isRegistering ? handleRegister : handleLogin}
+              disabled={isLoading} // <-- Disable button while loading
             >
-              {isRegistering ? "Register" : "Login"}
+              {isLoading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  {isRegistering ? "Registering..." : "Logging in..."}
+                </>
+              ) : (
+                isRegistering ? "Register" : "Login"
+              )}
             </button>
 
             <p className="text-center mt-4">
