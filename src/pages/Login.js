@@ -11,8 +11,6 @@ function Login() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [loginType, setLoginType] = useState("email");
   const [showPassword, setShowPassword] = useState(false);
-  const [otp, setOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
 
   const navigate = useNavigate();
   const API = "https://kisansetu-backend-v50h.onrender.com";
@@ -55,54 +53,30 @@ function Login() {
     }
   }, [navigate]);
 
-  // REGISTER WITH OTP
+  // REGISTER WITHOUT OTP
   const handleRegister = () => {
-    if (!email) {
-      alert("Please enter email");
+    if (!name || !email || !password || !role) {
+      alert("Please fill all fields");
       return;
     }
 
-    if (!otpSent) {
-      // STEP 1: SEND OTP
-      axios.post(`${API}/auth/send-otp`, { email })
-        .then((res) => {
-          console.log("OTP Response:", res.data); // Helpful for debugging
-          alert("OTP sent to your email");
-          setOtpSent(true); // This triggers the UI to show the OTP field
-        })
-        .catch((err) => {
-          console.error("OTP Error:", err);
-          // Now alerts the exact reason the OTP failed (e.g., "User already exists")
-          alert(err.response?.data?.message || "Failed to send OTP. Check console.");
-        });
-    } else {
-      // STEP 2: VERIFY OTP + REGISTER
-      if (!name || !password || !role || !otp) {
-        alert("Please fill all fields including OTP");
-        return;
-      }
-
-      axios.post(`${API}/auth/register`, {
-        name,
-        email,
-        password,
-        role,
-        otp
-      })
-      .then(() => {
-        alert("Registration successful!");
-        setIsRegistering(false);
-        setOtpSent(false);
-        setOtp("");
-        setName("");
-        setEmail("");
-        setPassword("");
-        setRole("");
-      })
-      .catch((err) => {
-        alert(err.response?.data?.message || "Invalid OTP");
-      });
-    }
+    axios.post(`${API}/auth/register`, {
+      name,
+      email,
+      password,
+      role
+    })
+    .then(() => {
+      alert("Registration successful!");
+      setIsRegistering(false);
+      setName("");
+      setEmail("");
+      setPassword("");
+      setRole("");
+    })
+    .catch((err) => {
+      alert(err.response?.data?.message || "Registration Failed");
+    });
   };
 
   return (
@@ -193,17 +167,6 @@ function Login() {
                   <option value="farmer">Farmer</option>
                   <option value="consumer">Consumer</option>
                 </select>
-
-                {/* OTP FIELD */}
-                {otpSent && (
-                  <input
-                    className="form-control mb-3 border-success"
-                    placeholder="Enter OTP"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    autoFocus
-                  />
-                )}
               </>
             )}
 
@@ -238,11 +201,8 @@ function Login() {
               type="button" 
               className="btn btn-success w-100 fw-bold py-2"
               onClick={isRegistering ? handleRegister : handleLogin}
-              disabled={isRegistering && !otpSent && !email}
             >
-              {isRegistering
-                ? (otpSent ? "Verify OTP & Register" : "Send OTP")
-                : "Login"}
+              {isRegistering ? "Register" : "Login"}
             </button>
 
             <p className="text-center mt-4">
@@ -252,10 +212,7 @@ function Login() {
               <span
                 className="text-success fw-bold ms-2"
                 style={{ cursor: "pointer" }}
-                onClick={() => {
-                  setIsRegistering(!isRegistering);
-                  setOtpSent(false); // Reset OTP state when switching modes
-                }}
+                onClick={() => setIsRegistering(!isRegistering)}
               >
                 {isRegistering ? "Login" : "Signup"}
               </span>
