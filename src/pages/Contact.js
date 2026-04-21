@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+"use client";
+import { useEffect, useState } from "react";
 
-const ContactDiary = () => {
+export default function ContactsPage() {
   const [contacts, setContacts] = useState([]);
   const [form, setForm] = useState({
     name: "",
@@ -10,28 +11,21 @@ const ContactDiary = () => {
     notes: "",
   });
 
-  // Load from localStorage
-  useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("contacts"));
-    if (saved) setContacts(saved);
-  }, []);
-
-  // Save to localStorage
-  useEffect(() => {
-    localStorage.setItem("contacts", JSON.stringify(contacts));
-  }, [contacts]);
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const fetchContacts = async () => {
+    const res = await fetch("/api/contacts");
+    const data = await res.json();
+    setContacts(data);
   };
 
-  const addContact = () => {
-    if (!form.name || !form.phone) {
-      alert("Name & Phone required");
-      return;
-    }
+  useEffect(() => {
+    fetchContacts();
+  }, []);
 
-    setContacts([...contacts, { ...form, id: Date.now() }]);
+  const addContact = async () => {
+    await fetch("/api/contacts", {
+      method: "POST",
+      body: JSON.stringify(form),
+    });
 
     setForm({
       name: "",
@@ -40,73 +34,51 @@ const ContactDiary = () => {
       location: "",
       notes: "",
     });
+
+    fetchContacts();
   };
 
-  const deleteContact = (id) => {
-    setContacts(contacts.filter((c) => c.id !== id));
+  const deleteContact = async (id) => {
+    await fetch(`/api/contacts/${id}`, {
+      method: "DELETE",
+    });
+
+    fetchContacts();
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>📒 Contact Diary</h1>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold">📒 Contact Diary</h1>
 
       {/* Form */}
-      <div style={{ marginBottom: "20px" }}>
-        <input
-          name="name"
-          placeholder="Name"
-          value={form.name}
-          onChange={handleChange}
-        />
-        <input
-          name="phone"
-          placeholder="Phone"
-          value={form.phone}
-          onChange={handleChange}
-        />
-        <select name="type" value={form.type} onChange={handleChange}>
+      <div className="grid gap-2 my-4">
+        <input placeholder="Name" onChange={(e)=>setForm({...form,name:e.target.value})}/>
+        <input placeholder="Phone" onChange={(e)=>setForm({...form,phone:e.target.value})}/>
+        <select onChange={(e)=>setForm({...form,type:e.target.value})}>
           <option>Farmer</option>
           <option>Consumer</option>
         </select>
-        <input
-          name="location"
-          placeholder="Location"
-          value={form.location}
-          onChange={handleChange}
-        />
-        <input
-          name="notes"
-          placeholder="Notes"
-          value={form.notes}
-          onChange={handleChange}
-        />
+        <input placeholder="Location" onChange={(e)=>setForm({...form,location:e.target.value})}/>
+        <input placeholder="Notes" onChange={(e)=>setForm({...form,notes:e.target.value})}/>
 
-        <button onClick={addContact}>Add Contact</button>
+        <button onClick={addContact} className="bg-green-600 text-white p-2">
+          Add Contact
+        </button>
       </div>
 
       {/* List */}
       <div>
         {contacts.map((c) => (
-          <div
-            key={c.id}
-            style={{
-              border: "1px solid #ccc",
-              padding: "10px",
-              marginBottom: "10px",
-            }}
-          >
+          <div key={c._id} className="border p-3 mb-2 rounded">
             <h3>{c.name}</h3>
-            <p>📞 {c.phone}</p>
-            <p>👤 {c.type}</p>
-            <p>📍 {c.location}</p>
-            <p>📝 {c.notes}</p>
-
-            <button onClick={() => deleteContact(c.id)}>Delete</button>
+            <p>{c.phone}</p>
+            <p>{c.type}</p>
+            <button onClick={() => deleteContact(c._id)}>
+              Delete
+            </button>
           </div>
         ))}
       </div>
     </div>
   );
-};
-
-export default ContactDiary;
+}
