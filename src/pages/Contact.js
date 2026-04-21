@@ -113,16 +113,16 @@ export default function ContactDiary() {
   <div className="flex flex-col md:flex-row gap-4 items-center">
 
     {/* Avatar Preview */}
+            <div className="grid md:grid-cols-2 gap-3 w-full">
+<div className="flex items-center gap-3 mb-2">
+  <div className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-bold">
+    {c.name[0].toUpperCase()}
+  </div>
     <div className="w-16 h-16 rounded-full bg-green-500 text-white flex items-center justify-center text-xl font-bold">
       {form.name ? form.name[0].toUpperCase() : "?"}
     </div>
 
     {/* Inputs */}
-    <div className="grid md:grid-cols-2 gap-3 w-full">
-<div className="flex items-center gap-3 mb-2">
-  <div className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-bold">
-    {c.name[0].toUpperCase()}
-  </div>
   <h3 className="font-bold text-lg">{c.name}</h3>
 </div>
       <input
