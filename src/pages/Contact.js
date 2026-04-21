@@ -103,54 +103,76 @@ export default function ContactDiary() {
         />
 
         {/* Form */}
-        <div className="bg-white p-5 rounded-2xl shadow mb-6">
-          <h2 className="mb-3 font-semibold">➕ Add Contact</h2>
+        {/* FORM - PREMIUM TOP CARD */}
+<div className="bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-xl mb-8 border border-gray-200">
 
-          <div className="grid md:grid-cols-2 gap-3">
-            <input
-              className="p-2 border rounded"
-              placeholder="Name"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-            <input
-              className="p-2 border rounded"
-              placeholder="Phone"
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            />
+  <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+    ➕ Add New Contact
+  </h2>
 
-            <select
-              className="p-2 border rounded"
-              value={form.type}
-              onChange={(e) => setForm({ ...form, type: e.target.value })}
-            >
-              <option>Farmer</option>
-              <option>Consumer</option>
-            </select>
+  <div className="flex flex-col md:flex-row gap-4 items-center">
 
-            <input
-              className="p-2 border rounded"
-              placeholder="Location"
-              value={form.location}
-              onChange={(e) => setForm({ ...form, location: e.target.value })}
-            />
+    {/* Avatar Preview */}
+    <div className="w-16 h-16 rounded-full bg-green-500 text-white flex items-center justify-center text-xl font-bold">
+      {form.name ? form.name[0].toUpperCase() : "?"}
+    </div>
 
-            <input
-              className="p-2 border rounded md:col-span-2"
-              placeholder="Notes"
-              value={form.notes}
-              onChange={(e) => setForm({ ...form, notes: e.target.value })}
-            />
-          </div>
+    {/* Inputs */}
+    <div className="grid md:grid-cols-2 gap-3 w-full">
+<div className="flex items-center gap-3 mb-2">
+  <div className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-bold">
+    {c.name[0].toUpperCase()}
+  </div>
+  <h3 className="font-bold text-lg">{c.name}</h3>
+</div>
+      <input
+        className="p-3 border rounded-xl focus:ring-2 focus:ring-green-400 outline-none"
+        placeholder="Full Name"
+        value={form.name}
+        onChange={(e) => setForm({ ...form, name: e.target.value })}
+      />
 
-          <button
-            onClick={addContact}
-            className="mt-4 w-full bg-green-600 text-white p-2 rounded"
-          >
-            Add Contact
-          </button>
-        </div>
+      <input
+        className="p-3 border rounded-xl focus:ring-2 focus:ring-green-400 outline-none"
+        placeholder="Phone Number"
+        value={form.phone}
+        onChange={(e) => setForm({ ...form, phone: e.target.value })}
+      />
+
+      <select
+        className="p-3 border rounded-xl focus:ring-2 focus:ring-green-400"
+        value={form.type}
+        onChange={(e) => setForm({ ...form, type: e.target.value })}
+      >
+        <option>Farmer</option>
+        <option>Consumer</option>
+      </select>
+
+      <input
+        className="p-3 border rounded-xl focus:ring-2 focus:ring-green-400"
+        placeholder="Location"
+        value={form.location}
+        onChange={(e) => setForm({ ...form, location: e.target.value })}
+      />
+
+      <input
+        className="p-3 border rounded-xl md:col-span-2 focus:ring-2 focus:ring-green-400"
+        placeholder="Notes"
+        value={form.notes}
+        onChange={(e) => setForm({ ...form, notes: e.target.value })}
+      />
+
+    </div>
+  </div>
+
+  {/* Button */}
+  <button
+    onClick={addContact}
+    className="mt-5 w-full bg-gradient-to-r from-green-600 to-green-500 text-white py-3 rounded-xl font-semibold hover:scale-[1.02] transition"
+  >
+    Save Contact
+  </button>
+</div>
 
         {/* Cards */}
         <div className="grid md:grid-cols-2 gap-4">
