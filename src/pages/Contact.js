@@ -1,8 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function ContactsPage() {
+export default function ContactDiary() {
   const [contacts, setContacts] = useState([]);
+  const [search, setSearch] = useState("");
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -11,21 +12,22 @@ export default function ContactsPage() {
     notes: "",
   });
 
-  const fetchContacts = async () => {
-    const res = await fetch("/api/contacts");
-    const data = await res.json();
-    setContacts(data);
-  };
-
   useEffect(() => {
-    fetchContacts();
+    const data = JSON.parse(localStorage.getItem("contacts"));
+    if (data) setContacts(data);
   }, []);
 
-  const addContact = async () => {
-    await fetch("/api/contacts", {
-      method: "POST",
-      body: JSON.stringify(form),
-    });
+  useEffect(() => {
+    localStorage.setItem("contacts", JSON.stringify(contacts));
+  }, [contacts]);
+
+  const addContact = () => {
+    if (!form.name || !form.phone) {
+      alert("Name & Phone required");
+      return;
+    }
+
+    setContacts([{ ...form, id: Date.now() }, ...contacts]);
 
     setForm({
       name: "",
@@ -34,50 +36,138 @@ export default function ContactsPage() {
       location: "",
       notes: "",
     });
-
-    fetchContacts();
   };
 
-  const deleteContact = async (id) => {
-    await fetch(`/api/contacts/${id}`, {
-      method: "DELETE",
-    });
-
-    fetchContacts();
+  const deleteContact = (id) => {
+    setContacts(contacts.filter((c) => c.id !== id));
   };
+
+  const filtered = contacts.filter((c) =>
+    c.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold">📒 Contact Diary</h1>
-
-      {/* Form */}
-      <div className="grid gap-2 my-4">
-        <input placeholder="Name" onChange={(e)=>setForm({...form,name:e.target.value})}/>
-        <input placeholder="Phone" onChange={(e)=>setForm({...form,phone:e.target.value})}/>
-        <select onChange={(e)=>setForm({...form,type:e.target.value})}>
-          <option>Farmer</option>
-          <option>Consumer</option>
-        </select>
-        <input placeholder="Location" onChange={(e)=>setForm({...form,location:e.target.value})}/>
-        <input placeholder="Notes" onChange={(e)=>setForm({...form,notes:e.target.value})}/>
-
-        <button onClick={addContact} className="bg-green-600 text-white p-2">
-          Add Contact
-        </button>
+    <div className="min-h-screen bg-gray-50 p-6">
+      
+      {/* Header */}
+      <div className="max-w-4xl mx-auto mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">
+          📒 Contact Diary Dashboard
+        </h1>
+        <p className="text-gray-500">
+          Manage your farmers & consumers efficiently
+        </p>
       </div>
 
-      {/* List */}
-      <div>
-        {contacts.map((c) => (
-          <div key={c._id} className="border p-3 mb-2 rounded">
-            <h3>{c.name}</h3>
-            <p>{c.phone}</p>
-            <p>{c.type}</p>
-            <button onClick={() => deleteContact(c._id)}>
-              Delete
-            </button>
+      <div className="max-w-4xl mx-auto">
+
+        {/* Search */}
+        <input
+          className="w-full p-3 mb-4 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+          placeholder="🔍 Search contacts..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        {/* Form Card */}
+        <div className="bg-white p-5 rounded-2xl shadow-md mb-6">
+          <h2 className="font-semibold mb-3 text-lg">➕ Add New Contact</h2>
+
+          <div className="grid md:grid-cols-2 gap-3">
+            <input
+              className="p-2 border rounded-lg"
+              placeholder="Name"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
+
+            <input
+              className="p-2 border rounded-lg"
+              placeholder="Phone"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            />
+
+            <select
+              className="p-2 border rounded-lg"
+              value={form.type}
+              onChange={(e) => setForm({ ...form, type: e.target.value })}
+            >
+              <option>Farmer</option>
+              <option>Consumer</option>
+            </select>
+
+            <input
+              className="p-2 border rounded-lg"
+              placeholder="Location"
+              value={form.location}
+              onChange={(e) => setForm({ ...form, location: e.target.value })}
+            />
+
+            <input
+              className="p-2 border rounded-lg md:col-span-2"
+              placeholder="Notes"
+              value={form.notes}
+              onChange={(e) => setForm({ ...form, notes: e.target.value })}
+            />
           </div>
-        ))}
+
+          <button
+            onClick={addContact}
+            className="mt-4 w-full bg-green-600 text-white p-3 rounded-xl hover:bg-green-700 transition"
+          >
+            Add Contact
+          </button>
+        </div>
+
+        {/* Contact Cards */}
+        <div className="grid gap-4">
+          {filtered.length === 0 && (
+            <p className="text-gray-500 text-center">No contacts found</p>
+          )}
+
+          {filtered.map((c) => (
+            <div
+              key={c.id}
+              className="bg-white p-4 rounded-2xl shadow-md flex justify-between items-center hover:shadow-lg transition"
+            >
+              <div>
+                <h3 className="text-lg font-bold text-gray-800">
+                  {c.name}
+                </h3>
+
+                <p className="text-sm text-gray-600">📞 {c.phone}</p>
+                <p className="text-sm text-gray-600">📍 {c.location}</p>
+
+                {/* Type Badge */}
+                <span
+                  className={`inline-block mt-1 px-3 py-1 text-xs rounded-full ${
+                    c.type === "Farmer"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-blue-100 text-blue-700"
+                  }`}
+                >
+                  {c.type}
+                </span>
+
+                {c.notes && (
+                  <p className="text-xs text-gray-400 mt-1">
+                    📝 {c.notes}
+                  </p>
+                )}
+              </div>
+
+              {/* Delete */}
+              <button
+                onClick={() => deleteContact(c.id)}
+                className="text-red-500 hover:text-red-700 text-sm"
+              >
+                ❌ Delete
+              </button>
+            </div>
+          ))}
+        </div>
+
       </div>
     </div>
   );
