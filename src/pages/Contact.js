@@ -12,11 +12,13 @@ export default function ContactDiary() {
     notes: "",
   });
 
+  // Load data
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem("contacts"));
     if (data) setContacts(data);
   }, []);
 
+  // Save data
   useEffect(() => {
     localStorage.setItem("contacts", JSON.stringify(contacts));
   }, [contacts]);
@@ -46,30 +48,51 @@ export default function ContactDiary() {
     c.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      
-      {/* Header */}
-      <div className="max-w-4xl mx-auto mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">
-          📒 Contact Diary Dashboard
-        </h1>
-        <p className="text-gray-500">
-          Manage your farmers & consumers efficiently
-        </p>
-      </div>
+  const farmerCount = contacts.filter(c => c.type === "Farmer").length;
+  const consumerCount = contacts.filter(c => c.type === "Consumer").length;
 
-      <div className="max-w-4xl mx-auto">
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 p-6">
+
+      <div className="max-w-5xl mx-auto">
+
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-800">
+            📒 Contact Diary Dashboard
+          </h1>
+          <p className="text-gray-500">
+            Manage your farmers & consumers efficiently
+          </p>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="bg-white p-4 rounded-2xl shadow">
+            <p className="text-gray-500 text-sm">Total Contacts</p>
+            <h2 className="text-2xl font-bold">{contacts.length}</h2>
+          </div>
+
+          <div className="bg-green-100 p-4 rounded-2xl shadow">
+            <p className="text-green-700 text-sm">Farmers</p>
+            <h2 className="text-2xl font-bold">{farmerCount}</h2>
+          </div>
+
+          <div className="bg-blue-100 p-4 rounded-2xl shadow">
+            <p className="text-blue-700 text-sm">Consumers</p>
+            <h2 className="text-2xl font-bold">{consumerCount}</h2>
+          </div>
+        </div>
 
         {/* Search */}
         <input
-          className="w-full p-3 mb-4 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+          className="w-full p-3 mb-6 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400"
           placeholder="🔍 Search contacts..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        {/* Form Card */}
+        {/* Form */}
         <div className="bg-white p-5 rounded-2xl shadow-md mb-6">
           <h2 className="font-semibold mb-3 text-lg">➕ Add New Contact</h2>
 
@@ -121,49 +144,56 @@ export default function ContactDiary() {
         </div>
 
         {/* Contact Cards */}
-        <div className="grid gap-4">
+        <div className="grid md:grid-cols-2 gap-4">
           {filtered.length === 0 && (
-            <p className="text-gray-500 text-center">No contacts found</p>
+            <p className="text-gray-500 text-center col-span-2">
+              No contacts found
+            </p>
           )}
 
           {filtered.map((c) => (
             <div
               key={c.id}
-              className="bg-white p-4 rounded-2xl shadow-md flex justify-between items-center hover:shadow-lg transition"
+              className="bg-white/80 backdrop-blur-md border border-gray-200 p-5 rounded-2xl shadow-md hover:shadow-xl transition"
             >
-              <div>
-                <h3 className="text-lg font-bold text-gray-800">
-                  {c.name}
-                </h3>
+              <h3 className="text-lg font-bold text-gray-800">{c.name}</h3>
 
-                <p className="text-sm text-gray-600">📞 {c.phone}</p>
-                <p className="text-sm text-gray-600">📍 {c.location}</p>
+              <p className="text-sm text-gray-600 mt-1">📞 {c.phone}</p>
+              <p className="text-sm text-gray-600">📍 {c.location}</p>
 
-                {/* Type Badge */}
-                <span
-                  className={`inline-block mt-1 px-3 py-1 text-xs rounded-full ${
-                    c.type === "Farmer"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-blue-100 text-blue-700"
-                  }`}
-                >
-                  {c.type}
-                </span>
-
-                {c.notes && (
-                  <p className="text-xs text-gray-400 mt-1">
-                    📝 {c.notes}
-                  </p>
-                )}
-              </div>
-
-              {/* Delete */}
-              <button
-                onClick={() => deleteContact(c.id)}
-                className="text-red-500 hover:text-red-700 text-sm"
+              {/* Type Badge */}
+              <span
+                className={`inline-block mt-2 px-3 py-1 text-xs rounded-full ${
+                  c.type === "Farmer"
+                    ? "bg-green-100 text-green-700"
+                    : "bg-blue-100 text-blue-700"
+                }`}
               >
-                ❌ Delete
-              </button>
+                {c.type}
+              </span>
+
+              {c.notes && (
+                <p className="text-xs text-gray-400 mt-2">
+                  📝 {c.notes}
+                </p>
+              )}
+
+              {/* Actions */}
+              <div className="flex gap-4 mt-3">
+                <a
+                  href={`tel:${c.phone}`}
+                  className="text-green-600 text-sm hover:underline"
+                >
+                  📞 Call
+                </a>
+
+                <button
+                  onClick={() => deleteContact(c.id)}
+                  className="text-red-500 text-sm hover:underline"
+                >
+                  ❌ Delete
+                </button>
+              </div>
             </div>
           ))}
         </div>
