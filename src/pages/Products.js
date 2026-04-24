@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
+import API_BASE_URL from "../config/api";
 
 function Products() {
   const [products, setProducts] = useState([]);
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
-  const API = "https://kisansetu-backend-v50h.onrender.com";
+  const API = API_BASE_URL;
 
   // Fetch products when the page loads
   useEffect(() => {
