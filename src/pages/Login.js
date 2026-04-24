@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../config/api";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -11,10 +12,10 @@ function Login() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [loginType, setLoginType] = useState("email");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // <-- Added loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const API = "https://kisansetu-backend-v50h.onrender.com";
+  const API = API_BASE_URL;
 
   // LOGIN
   const handleLogin = () => {
@@ -33,7 +34,7 @@ function Login() {
         ? { email, password }
         : { mobile, password };
 
-    setIsLoading(true); // <-- Start loading
+    setIsLoading(true);
 
     axios
       .post(`${API}/auth/login`, loginData)
@@ -41,11 +42,11 @@ function Login() {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("role", res.data.role);
         alert("Login Successful!");
-        setIsLoading(false); // <-- Stop loading
+        setIsLoading(false);
         navigate("/dashboard");
       })
       .catch((err) => {
-        setIsLoading(false); // <-- Stop loading on error
+        setIsLoading(false);
         alert(err.response?.data?.message || "Login Failed");
       });
   };
@@ -65,7 +66,7 @@ function Login() {
       return;
     }
 
-    setIsLoading(true); // <-- Start loading
+    setIsLoading(true);
 
     axios.post(`${API}/auth/register`, {
       name,
@@ -75,7 +76,7 @@ function Login() {
     })
     .then(() => {
       alert("Registration successful!");
-      setIsLoading(false); // <-- Stop loading
+      setIsLoading(false);
       setIsRegistering(false);
       setName("");
       setEmail("");
@@ -83,7 +84,7 @@ function Login() {
       setRole("");
     })
     .catch((err) => {
-      setIsLoading(false); // <-- Stop loading on error
+      setIsLoading(false);
       alert(err.response?.data?.message || "Registration Failed");
     });
   };
@@ -210,7 +211,7 @@ function Login() {
               type="button" 
               className="btn btn-success w-100 fw-bold py-2 d-flex justify-content-center align-items-center"
               onClick={isRegistering ? handleRegister : handleLogin}
-              disabled={isLoading} // <-- Disable button while loading
+              disabled={isLoading}
             >
               {isLoading ? (
                 <>
